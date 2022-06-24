@@ -70,6 +70,11 @@ a.desc:after {
     color: rgba(255, 255, 255, 0.5);
 }
 
+.color-block {
+    height: 30px;
+    border: 1px solid #ccc;
+}
+
 @media(max-width:767px) {
     .nav li > form > button.logout {
         display:block;

@@ -27,6 +27,7 @@ AppAsset::register($this);
 </head>
 <body class="body-gray">
 <?php $this->beginBody() ?>
+<div class="loader-block"></div>
 <div class="container-fluid">
 
     <?= $content ?>

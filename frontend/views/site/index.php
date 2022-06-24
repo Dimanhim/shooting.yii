@@ -15,11 +15,13 @@ $this->title = 'Расписание';
             </div>
 
             <!-- MAIN -->
-            <?php for($i = 0; $i < 3; $i++) : ?>
-                <?= $this->render('_column') ?>
-            <?php endfor; ?>
-
+            <?= $model->getColumns() ?>
         </div>
     </div>
+    <!-- Modal View timetable item -->
+    <!--
+    to center middle add class modal-dialog-centered to modal-dialog
+    -->
+    <?= $this->render('_modal_view') ?>
 </main>
 

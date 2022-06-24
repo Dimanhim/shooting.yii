@@ -1,3 +1,9 @@
+<?php
+
+use common\models\Street;
+
+?>
+
 <!-- CALENDAR -->
 <div class="panel-block">
     <div class="panel-date">
@@ -8,7 +14,6 @@
 <!-- EMAIL -->
 <div class="panel-block">
     <div class="panel-block-email">
-
         <div class="accordion" id="accordionPanelsStayOpenExample">
             <div class="accordion-item">
                 <h2 class="accordion-header">
@@ -42,54 +47,31 @@
 <!-- ADRESSES -->
 <div class="panel-block">
     <div class="accordion">
-
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panel-action-adress-1" aria-expanded="true" aria-controls="panel-action-adress-1">
-                    Марксистская
-                </button>
-            </h2>
-            <div id="panel-action-adress-1" class="accordion-collapse collapse" aria-labelledby="panel-action-adress-1">
-                <div class="accordion-body">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="adress-item-1">
-                        <label class="form-check-label" for="adress-item-1">
-                            Марка 20м
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="adress-item-2" checked>
-                        <label class="form-check-label" for="adress-item-2">
-                            Марка 30м
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panel-action-adress-2" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                    Ботанический сад
-                </button>
-            </h2>
-            <div id="panel-action-adress-2" class="accordion-collapse collapse" aria-labelledby="panel-action-adress-2">
-                <div class="accordion-body">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="adress-item-3">
-                        <label class="form-check-label" for="adress-item-3">
-                            Бот. сад 20м
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="adress-item-4" checked>
-                        <label class="form-check-label" for="adress-item-4">
-                            Бот. сад 30м
-                        </label>
+        <?php if($adresses = Street::find()->all()) : ?>
+            <?php foreach($adresses as $adress) : ?>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panel-action-adress-<?= $adress->id ?>" aria-expanded="true" aria-controls="panel-action-adress-<?= $adress->id ?>">
+                            <?= $adress->name ?>
+                        </button>
+                    </h2>
+                    <div id="panel-action-adress-<?= $adress->id ?>" class="accordion-collapse collapse" aria-labelledby="panel-action-adress-<?= $adress->id ?>">
+                        <div class="accordion-body">
+                            <?php if($places = $adress->places) : ?>
+                                <?php foreach($places as $place) : ?>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="adress-item-<?= $place->id ?>">
+                                        <label class="form-check-label" for="adress-item-<?= $place->id ?>">
+                                            <?= $place->name ?>
+                                        </label>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 </div>
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8923b47126fe0fce968d46b40cf1bc7c",
+    "content-hash": "6455a8278d0072d86269268dbd5e9f0d",
     "packages": [
         {
             "name": "2amigos/yii2-ckeditor-widget",
