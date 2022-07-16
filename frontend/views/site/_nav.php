@@ -1,3 +1,9 @@
+<?php
+
+use yii\helpers\Url;
+use common\components\Helper;
+
+?>
 <nav class="header-top fixed-top navbar-light bg-light">
     <div class="container-fluid">
         <div class="header-items">
@@ -9,6 +15,7 @@
                 <!-- END Кнопка показа меню -->
 
                 <!-- Всплывающее скрытое меню -->
+                <!--
                 <div id="navbarSupportedContent" class="collapse navbar-collapse header-menu-content">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
@@ -33,60 +40,54 @@
                         </li>
                     </ul>
                 </div>
+                -->
                 <!-- END Всплывающее скрытое меню -->
             </div>
 
+            <div class="header-item header-item-sign-up-mobile">
+
+                <?= $this->render('blocks/_sign_up', ['user' => $user]) ?>
+
+            </div>
+
             <div class="header-item">
-                <a href="#" class="btn btn-primary">
+                <a href="#" class="btn btn-primary new-event-o">
                     <i class="bi bi-calendar-event"></i>
                     Новое событие
                 </a>
             </div>
 
             <div class="header-item btn-change-date">
-                <a href="#" id="btn-change-date">
+                <a href="<?= Url::to(['site/set-new-date']) ?>" id="btn-change-date">
                     <i class="bi bi-calendar-check"></i>
                     <span class="date-name">
-                                        Сегодня
-                                    </span>
+                        Сегодня
+                    </span>
                 </a>
-                <ul id="change-date-menu" class="change-date-menu">
+                <!--
+                <ul class="change-date-menu">
                     <li>
-                        <a href="#" data-val="1">
+                        <a href="" data-val="1">
                             Сегодня
                         </a>
                     </li>
-                    <li>
-                        <a href="#" data-val="2">
-                            Завтра
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" data-val="3">
-                            Послезавтра
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" data-val="4">
-                            Вчера
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" data-val="5">
-                            Позавчера
-                        </a>
-                    </li>
                 </ul>
+                -->
+            </div>
+            <div class="header-item not-styles-link">
+                <a href="<?= Url::to(['site/set-new-date', 'action' => 'minus']) ?>">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+                <a href="<?= Url::to(['site/set-new-date', 'action' => 'plus']) ?>">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
             </div>
             <div class="header-item">
-                <i class="bi bi-chevron-left"></i>
-                <i class="bi bi-chevron-right"></i>
-            </div>
-            <div class="header-item">
-                воскресенье, 5 июня 2022 г.
+                <?= Helper::getDateFormatHeader($date) ?>
             </div>
 
 
+            <!--
             <div class="header-item header-item-right">
                 <div class="header-calendar-day btn-change-date">
                     <i class="bi bi-calendar-check"></i>
@@ -94,16 +95,11 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
             </div>
-            <div class="header-item">
-                <!--
-                <a href="">
-                    (Dimas)
-                    <i class="bi bi-box-arrow-left"></i>
-                </a>
-                -->
-                <a href="">
-                    <i class="bi bi-box-arrow-right"></i>
-                </a>
+            -->
+            <div class="header-item header-item-sign-up header-item-right">
+
+                <?= $this->render('blocks/_sign_up', ['user' => $user]) ?>
+
             </div>
         </div>
     </div>

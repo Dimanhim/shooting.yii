@@ -18,6 +18,7 @@ class m220620_165925_timetable extends Migration
             'unique_id'             => Schema::TYPE_STRING . ' NOT NULL',
 
             'name'                  => Schema::TYPE_STRING,
+            'phone'                 => Schema::TYPE_STRING,
             'description'           => Schema::TYPE_TEXT,
             'short_description'     => Schema::TYPE_TEXT,
             'client_id'             => Schema::TYPE_INTEGER,
@@ -26,6 +27,7 @@ class m220620_165925_timetable extends Migration
             'time_to'               => Schema::TYPE_INTEGER,
             'place_id'              => Schema::TYPE_INTEGER,
             'user_id'               => Schema::TYPE_INTEGER,
+            'color_id'              => Schema::TYPE_INTEGER,
 
             'is_active'             => Schema::TYPE_SMALLINT,
             'deleted'               => Schema::TYPE_SMALLINT,

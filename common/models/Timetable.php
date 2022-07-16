@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\components\Helper;
 use Yii;
 
 /**
@@ -24,7 +25,7 @@ use Yii;
  * @property int|null $created_at
  * @property int|null $updated_at
  */
-class Timetable extends \yii\db\ActiveRecord
+class Timetable extends BaseModel
 {
     /**
      * {@inheritdoc}
@@ -41,8 +42,8 @@ class Timetable extends \yii\db\ActiveRecord
     {
         return [
             [['description', 'short_description'], 'string'],
-            [['client_id', 'date', 'time_from', 'time_to', 'place_id', 'user_id'], 'integer'],
-            [['name'], 'string', 'max' => 255],
+            [['client_id', 'date', 'time_from', 'time_to', 'place_id', 'user_id', 'color_id'], 'integer'],
+            [['name', 'phone'], 'string', 'max' => 255],
         ];
     }
 
@@ -54,6 +55,7 @@ class Timetable extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Название',
+            'phone' => 'Телефон',
             'description' => 'Описание',
             'short_description' => 'Короткое описание',
             'client_id' => 'Клиент',
@@ -62,6 +64,49 @@ class Timetable extends \yii\db\ActiveRecord
             'time_to' => 'Время до',
             'place_id' => 'Место',
             'user_id' => 'Пользователь',
+            'color_id' => 'Цвет',
         ];
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        $this->user_id = Yii::$app->user->id;
+
+        // добавляем ID клиента из существующего, либо создаем нового
+        if(!$client = Client::findOne(['phone' => $this->phone])) {
+            $client = new Client();
+            $client->name = $this->name;
+            $client->phone = $this->phone;
+            $client->save();
+        }
+        $this->client_id = $client->id;
+        $this->color_id = $this->color_id ? $this->color_id : Color::COLOR_TIMETABLE_DEFAULT;
+        return parent::beforeSave($insert);
+    }
+
+    /**
+     * @param $form
+     */
+    public function addAttributes($form)
+    {
+        $this->name = $form->name;
+        $this->date = $form->date;
+        $this->time_from = $form->time_from;
+        $this->time_to = $form->time_to;
+        $this->place_id = $form->place_id;
+        $this->description = $form->description;
+        $this->phone = Helper::phoneFormat($form->phone);
+    }
+    public function getItemStyle()
+    {
+        if($this->color_id && ($color = Color::findOne($this->color_id))) {
+            return $this->getStyles($color->background, $color->border, $color->text);
+        }
+        $color = Color::findOne(Color::COLOR_TIMETABLE_DEFAULT);
+        return $this->getStyles($color->background, $color->border, $color->text);
     }
 }

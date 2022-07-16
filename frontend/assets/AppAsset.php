@@ -40,6 +40,9 @@ class AppAsset extends AssetBundle
             '/js/bootstrap.bundle.min.js',
             '/js/jquery-ui.min.js',
             '/js/datepicker-ru.js',
+            '/js/inputmask.js',
+            '/js/jquery.inputmask.js',
+            '/js/functions.js?v='.mt_rand(1000,10000),
             '/js/common.js?v='.mt_rand(1000,10000),
         ];
     }

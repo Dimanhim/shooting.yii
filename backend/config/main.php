@@ -60,6 +60,6 @@ return [
             'allowedIPs' => ['*'],
         ],
     ],
-    'defaultRoute' => 'timetable/index',
+    'defaultRoute' => 'user/index',
     'params' => $params,
 ];

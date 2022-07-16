@@ -6,13 +6,13 @@ use yii\grid\ActionColumn;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel backend\models\PlaceSearch */
+/* @var $searchModel app\models\UserSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Стрельбища';
+$this->title = 'Пользователи';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="place-index">
+<div class="user-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -25,20 +25,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'street_id',
+
             'name',
-            'description:ntext',
-            'short_description:ntext',
-            'price',
-            [
-                'attribute' => 'color_id',
-                'format' => 'raw',
-                'value' => function($data) {
-                    if($data->color) {
-                        return $data->color->getViewBlock($data->color->background);
-                    }
-                }
-            ],
+            'username',
+            'email:email',
+            'status' => 'statusName',
+            //'role_id',
+            //'created_at',
+            //'updated_at',
+            //'verification_token',
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, $model, $key, $index, $column) {

@@ -3,30 +3,28 @@
 namespace common\models;
 
 use Yii;
-use yii\helpers\ArrayHelper;
 
 /**
- * This is the model class for table "streets".
+ * This is the model class for table "roles".
  *
  * @property int $id
  * @property string $unique_id
  * @property string $name
  * @property string|null $description
- * @property string|null $short_description
  * @property int|null $is_active
  * @property int|null $deleted
  * @property int|null $position
  * @property int|null $created_at
  * @property int|null $updated_at
  */
-class Street extends BaseModel
+class Role extends BaseModel
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'streets';
+        return 'roles';
     }
 
     /**
@@ -36,7 +34,7 @@ class Street extends BaseModel
     {
         return [
             [['name'], 'required'],
-            [['description', 'short_description'], 'string'],
+            [['description'], 'string'],
             [['name'], 'string', 'max' => 255],
         ];
     }
@@ -47,37 +45,27 @@ class Street extends BaseModel
     public function attributeLabels()
     {
         $attributeLabels = [
-            'id' => 'ID',
             'name' => 'Название',
             'description' => 'Описание',
-            'short_description' => 'Короткое описание',
         ];
         return array_merge(parent::attributeLabels(), $attributeLabels);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPlaces()
-    {
-        return $this->hasMany(Place::className(), ['street_id' => 'id']);
-    }
-
-    /**
      * @return array
      */
-    public static function getList()
+    public static function rolesRights()
     {
-        return ArrayHelper::map(self::find()->asArray()->all(), 'id', 'name');
+        return [
+            1 => 'Добавление записей в расписание',
+            2 => 'Просмотр пользователей',
+            3 => 'Редактирование раздела Места',
+        ];
     }
 
-    public function isShowedPlaces()
+    public static function getLinkClass($right_id)
     {
-        if($places = Place::find()->select('id')->where(['street_id' => $this->id])->all()) {
-            foreach($places as $place) {
-                if($place->isShowed('places', $place->id)) return true;
-            }
-        }
-        return false;
+        $role_id = User::getUser()->role_id;
+        return RoleRight::find()->where(['role_id' => $role_id, 'right_id' => $right_id])->exists();
     }
 }

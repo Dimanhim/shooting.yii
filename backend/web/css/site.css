@@ -93,3 +93,12 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+.roles-rights {
+
+}
+.link-success {
+
+}
+.role-row ul {
+    display: none;
+}

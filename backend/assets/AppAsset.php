@@ -36,6 +36,8 @@ class AppAsset extends AssetBundle
     public static function getCss()
     {
         return [
+            '/css/bootstrap-icons.css',
+            '/css/font-awesome.min.css',
             'css/site.css?v='.mt_rand(1000,10000),
         ];
     }
@@ -46,7 +48,7 @@ class AppAsset extends AssetBundle
     public static function getJs()
     {
         return [
-
+            'js/common.js?v='.mt_rand(1000,10000),
         ];
     }
 }

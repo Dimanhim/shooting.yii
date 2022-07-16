@@ -1,5 +1,7 @@
 <?php
 return [
+    //'language' => 'ru-RU',
+    //'sourceLanguage' => 'en-US',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -12,5 +14,11 @@ return [
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
         ],
+        /*'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'nullDisplay' => '&nbsp;',
+            'thousandSeparator' => ' ',
+            'language' => 'ru-RU',
+        ],*/
     ],
 ];

@@ -1,3 +1,3 @@
-<?php foreach($model as $value) : ?>
+<?php if($model) : foreach($model as $value) : ?>
     <?= $this->render('_column', ['model' => $value]) ?>
-<?php endforeach; ?>
+<?php endforeach; endif; ?>

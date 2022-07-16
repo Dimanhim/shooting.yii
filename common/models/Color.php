@@ -20,6 +20,9 @@ use yii\helpers\ArrayHelper;
  */
 class Color extends BaseModel
 {
+    const COLOR_ID_1 = 7;                         // для единичного клиента
+    const COLOR_ID_2 = 8;                        // для постоянного клиента
+    const COLOR_TIMETABLE_DEFAULT = 9;          // для заявок по умолчанию
     /**
      * {@inheritdoc}
      */

@@ -5,27 +5,26 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "clients".
+ * This is the model class for table "role_rights".
  *
  * @property int $id
  * @property string $unique_id
- * @property string|null $name
- * @property string|null $email
- * @property string|null $phone
+ * @property int|null $role_id
+ * @property int|null $right_id
  * @property int|null $is_active
  * @property int|null $deleted
  * @property int|null $position
  * @property int|null $created_at
  * @property int|null $updated_at
  */
-class Client extends BaseModel
+class RoleRight extends BaseModel
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'clients';
+        return 'role_rights';
     }
 
     /**
@@ -34,8 +33,7 @@ class Client extends BaseModel
     public function rules()
     {
         return [
-            [['phone'], 'required'],
-            [['name', 'email', 'phone'], 'string', 'max' => 255],
+            [['role_id', 'right_id'], 'integer'],
         ];
     }
 
@@ -44,11 +42,10 @@ class Client extends BaseModel
      */
     public function attributeLabels()
     {
-        return [
-            'id' => 'ID',
-            'name' => 'Название',
-            'email' => 'E-mail',
-            'phone' => 'Телефон',
+        $attributeLabels = [
+            'role_id' => 'Роль',
+            'right_id' => 'Права',
         ];
+        return array_merge(parent::attributeLabels(), $attributeLabels);
     }
 }

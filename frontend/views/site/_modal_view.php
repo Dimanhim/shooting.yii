@@ -1,4 +1,4 @@
-<div class="modal fade" id="timetable-item" tabindex="-1" aria-labelledby="timetable-item-label" aria-hidden="true">
+<div class="timetable-item modal fade" id="timetable-item" tabindex="-1" aria-labelledby="timetable-item-label" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header btn-change-date" style="background: #5F95E9; color: #fff">

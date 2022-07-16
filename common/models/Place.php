@@ -2,7 +2,9 @@
 
 namespace common\models;
 
+use common\components\Helper;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "places".
@@ -62,5 +64,68 @@ class Place extends BaseModel
             'color_id' => 'Цвет',
         ];
         return array_merge(parent::attributeLabels(), $attributeLabels);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getList()
+    {
+        return ArrayHelper::map(self::find()->asArray()->all(), 'id', 'name');
+    }
+
+    /**
+     * @return array
+     */
+    public function getColumnValues()
+    {
+        $model = new BaseModel();
+        $result = [];
+
+        if(
+            $timetables = Timetable::find()
+                ->where([
+                    'date' => $model->_config[$this->getCacheName('date_timestamp')],
+                    'place_id' => $this->id,
+                ])
+                ->all()
+        ) {
+            foreach($timetables as $timetable) {
+                $result[] = [
+                    'name' => $timetable->name,
+                    'phone' => $timetable->phone,
+                    'description' => $timetable->description,
+                    'short_description' => $timetable->short_description,
+                    'date' => $timetable->date,
+                    'time_from' => $timetable->time_from,
+                    'time_to' => $timetable->time_to,
+                    'styles' => $timetable->getItemStyle(),
+                ];
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param $time
+     * @param $columnValues
+     * @return string
+     */
+    public function getColumnValue($time, $columnValues)
+    {
+        $time = Helper::formatTimeFromHours($time);
+        $str = '';
+        if(!empty($columnValues)) {
+            foreach($columnValues as $columnValue) {
+                if($columnValue['time_from'] >= $time && $columnValue['time_from'] <= $time) {
+                    $str .= Yii::$app->controller->renderPartial('//site/_record', [
+                        'time' => $time,
+                        'column' => $columnValue,
+                        'model' => $this,
+                    ]);
+                }
+            }
+        }
+        return $str;
     }
 }

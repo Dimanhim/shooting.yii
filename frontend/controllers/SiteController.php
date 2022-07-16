@@ -2,7 +2,10 @@
 
 namespace frontend\controllers;
 
+use common\components\Helper;
 use common\models\BaseModel;
+use common\models\TimetableForm;
+use common\models\Timetable;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
@@ -16,6 +19,8 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use common\models\User;
+use yii\web\NotFoundHttpException;
 
 /**
  * Site controller
@@ -30,26 +35,26 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                //'only' => ['logout', 'signup', 'index', 'login'],
                 'rules' => [
                     [
-                        'actions' => ['signup'],
+                        'actions' => ['signup', 'login'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout'],
+                        //'actions' => ['logout', 'index', 'get-times-to', 'show-create-modal', 'update-table'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                 ],
             ],
-            'verbs' => [
+            /*'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
                 ],
-            ],
+            ],*/
         ];
     }
 
@@ -77,8 +82,10 @@ class SiteController extends Controller
     public function actionIndex()
     {
         $model = new BaseModel();
+        $user = User::getUser();
         return $this->render('index', [
             'model' => $model,
+            'user' => $user,
         ]);
     }
 
@@ -259,5 +266,144 @@ class SiteController extends Controller
         return $this->render('resendVerificationEmail', [
             'model' => $model
         ]);
+    }
+
+
+
+
+
+    /**
+    AJAX
+     */
+    public function actionShowCreateModal($time = null, $place = null)
+    {
+        $data = Yii::$app->request->get('param');
+        $model = new TimetableForm();
+        $responce = [
+            'result' => true,
+            'html' => $this->renderPartial('_modal_create', [
+                'data' => $data,
+                'model' => $model,
+                'time' => $time,
+                'place' => $place,
+            ]),
+        ];
+        return json_encode($responce);
+    }
+    /**
+    AJAX
+     */
+    public function actionShowViewModal($id)
+    {
+        $model = new Timetable();
+        if(!$model = Timetable::findOne($id)) {
+            throw new NotFoundHttpException('Страница не найдена');
+        }
+        return $this->renderPartial('_modal_view', [
+           'model' => $model,
+        ]);
+    }
+
+    public function actionGetTimesTo($time)
+    {
+        $responce = [
+            'result' => true,
+            'html' => null,
+        ];
+        $result = [];
+        if($times = Helper::getTimesSecondsArray()) {
+            foreach($times as $key => $val) {
+                if($key > $time) {
+                    $result[$key] = $val;
+                }
+            }
+            $responce['result'] = true;
+            $responce['html'] = Helper::getTimesOptions($result);
+        }
+        return json_encode($responce);
+    }
+
+    public function actionUpdateTable()
+    {
+        if(Yii::$app->request->isAjax) {
+            $model = new BaseModel();
+            return $model->getColumns();
+        }
+    }
+
+    public function actionChangeDate()
+    {
+        if(Yii::$app->request->isAjax) {
+            $date = Yii::$app->request->get('date');
+            $model = new BaseModel();
+            $model->setCacheDate($date);
+            $responce = [
+                'result' => true,
+                'date' => $model->getCacheDate(),
+            ];
+            return json_encode($responce);
+        }
+    }
+
+    public function actionSetNewDate($action = null)
+    {
+        $model = new BaseModel();
+
+        if($action) {
+            $date = $model->getCacheDate()['date_timestamp'];
+
+            if($action == 'plus') {
+                $newDate = $date + 86400;
+                $model->setCacheDate(date('d.m.Y', $newDate));
+            }
+            elseif($action == 'minus') {
+                $newDate = $date - 86400;
+                $model->setCacheDate(date('d.m.Y', $newDate));
+            }
+        }
+        else {
+            $model->setCacheDate(date('d.m.Y'));
+        }
+        return $this->redirect('/');
+
+
+
+
+        /*$date = Yii::$app->request->get('date');
+        if()
+        $model = new BaseModel();
+        $model->setCacheDate($date);
+        $responce = [
+            'result' => true,
+            'date' => $model->getCacheDate(),
+        ];
+        */
+    }
+
+    public function actionChangePlaces()
+    {
+        if(Yii::$app->request->isAjax) {
+            if($data = Yii::$app->request->get('data')) {
+                $ids = [];
+                foreach($data as $value) {
+                    $ids[] = $value['id'];
+                }
+
+;            }
+            $model = new BaseModel();
+            $model->setCachePlaces($ids);
+            $responce = [
+                'result' => true,
+                'date' => $model->getCachePlaces(),
+            ];
+            return json_encode($responce);
+        }
+    }
+
+    public function actionUpdateMain()
+    {
+        $timeBegin = time() - 10;
+        $timeEnd = time();
+        return Timetable::find()->select(['created_at'])->where(['between', 'created_at', $timeBegin, $timeEnd])->exists();
     }
 }

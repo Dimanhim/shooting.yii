@@ -2,47 +2,69 @@
 
 namespace common\models;
 
+use common\components\Helper;
 use Yii;
+use yii\base\ErrorException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 class BaseModel extends ActiveRecord
 {
-    public $_config = [
-        'places' => [
-            1,2,3,4
-        ],
-        'date' => '',
-    ];
-    public $_styles = [
-        'titles' => [
-            0 => '#5F95E9;',
-            1 => '#5F95E9;',
-            2 => '#183863;',
-            3 => '#183863;',
-        ],
-        'columns' => [
-            0 => 'border-left: 3px solid #A9827E; background: #EDD3D1;',
-            1 => 'border-left: 3px solid #5F7086; background: #A7B3C3;',
-            2 => 'border-left: 3px solid #84A777; background: #D7EECE;',
-            3 => 'border-left: 3px solid #80AB6E; background: #98CF7E;',
-        ],
+    const CACHE_DURATION = 3600 * 24 * 7;
+
+    protected $_config = [];
+
+    protected $_default_values = [
+        'places' => []
     ];
 
-    public $_text = [
-        'titles' => [
-            0 => 'Марка 20м',
-            1 => 'Марка 30м',
-            2 => 'Ботанический сад 20м',
-            3 => 'Ботанический сад 30м',
+    /*protected $_config = [
+        'places' => [
+            1,3,4
         ],
-        'columns' => [
-            0 => 'Lorem ipsum dolor sit amet',
-            1 => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. At, cum dicta',
-            2 => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cumque et harum id necessitatibus nemo neque officia quas repellendus, sunt suscipit. Eius harum ',
-            3 => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cumque et harum id necessitatibus nemo neque officia quas repellendus, sunt suscipit. Eius harum iure voluptatibus! Ducimus eveniet fuga officiis quod velit.',
-        ],
-    ];
+        'date' => '',
+        'date_timestamp' => '',
+    ];*/
+
+    public function __construct()
+    {
+        /** DATE */
+        $this->getCacheDate();
+
+        /** PLACES */
+        $this->getCachePlaces();
+
+
+
+
+        //$date = '09.07.2022';
+        //$this->_config['date'] = $date;
+        //$this->_config['date_timestamp'] = strtotime($date);
+    }
+
+
+
+    public function getStyles($background = null, $border = null, $text = null)
+    {
+        $str = '';
+        if($background) $str .= 'background: '.$background.';';
+        if($border) $str .= 'border-left: 3px solid '.$border.';';
+        if($text) $str .= 'color: '.$text.';';
+        return $str;
+    }
+
+
+
+
+
+    /**
+     * @param bool $timestamp
+     * @return float|int|mixed
+     */
+    public function getDateCash($timestamp = false)
+    {
+        return $timestamp ? $this->_config[$this->getCacheName('date_timestamp')] : $this->_config[$this->getCacheName('date')];
+    }
 
     /**
      * @return array
@@ -122,6 +144,161 @@ class BaseModel extends ActiveRecord
         return 'background: #fff;';
     }
 
+
+    /**
+     * @return string
+     */
+    public function getColumns()
+    {
+        $model = Place::find()->where(['in', 'id', $this->_config[$this->getCacheName('places')]])->all();
+        return Yii::$app->controller->renderPartial('//site/columns', [
+            'model' => $model,
+        ]);
+    }
+
+    public function isShowed($placeName, $placeValue)
+    {
+        $config = $this->_config;
+        if(array_key_exists($this->getCacheName($placeName), $config)) {
+            if(is_array($config[$this->getCacheName($placeName)])) {
+                return in_array($placeValue, $config[$this->getCacheName($placeName)]);
+            }
+            return $placeValue == $config[$this->getCacheName($placeName)];
+        }
+    }
+
+
+
+    /**
+    CACHE
+     */
+    public function setCacheDate($date) {
+        $cacheNameDate = $this->getCacheName('date');
+        $cacheNameDateTimestamp = $this->getCacheName('date_timestamp');
+        $this->setCache($cacheNameDate, $date);
+        $this->_config[$cacheNameDate] = $date;
+        $this->_config[$cacheNameDateTimestamp] = strtotime($date);
+    }
+    public function getCacheDate() {
+        $cacheNameDate = $this->getCacheName('date');
+        $cacheNameDateTimestamp = $this->getCacheName('date_timestamp');
+        if(!$this->cacheExists($cacheNameDate)) {
+            $this->setCache($cacheNameDate, date('d.m.Y'));
+        }
+        $date = $this->getCache($cacheNameDate);
+        $this->_config[$cacheNameDate] = $date;
+        $this->_config[$cacheNameDateTimestamp] = strtotime($date);
+        return [
+            'date' => $this->_config[$cacheNameDate],
+            'date_timestamp' => $this->_config[$cacheNameDateTimestamp],
+        ];
+    }
+
+    public function setCachePlaces($places) {
+        $cacheNamePlaces = $this->getCacheName('places');
+        $placesString = Helper::getStringFromArray($places);
+        $this->setCache($cacheNamePlaces, $placesString);
+        $this->_config[$cacheNamePlaces] = $places;
+    }
+    public function getCachePlaces() {
+        $cacheNamePlaces = $this->getCacheName('places');
+        if(!$this->cacheExists($cacheNamePlaces)) {
+            $this->setCache($cacheNamePlaces, Helper::getStringFromArray($this->_default_values['places']));
+        }
+        $places = $this->getCache($cacheNamePlaces);
+        $this->_config[$cacheNamePlaces] = Helper::getArrayFromString($places);
+    }
+
+
+
+
+
+
+
+
+    public function getCacheName($name) {
+        return $name.'_'.Yii::$app->user->id;
+    }
+    private function setCache($name, $value) {
+        Yii::$app->cache->set($name, $value, self::CACHE_DURATION);
+    }
+    private function cacheExists($name) {
+        return Yii::$app->cache->exists($name);
+    }
+    private function getCache($name) {
+        return Yii::$app->cache->get($name);
+    }
+    private function deleteCash($name)
+    {
+        return Yii::$app->cache->delete($name);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public $_styles = [
+        'titles' => [
+            0 => '#5F95E9;',
+            1 => '#5F95E9;',
+            2 => '#183863;',
+            3 => '#183863;',
+        ],
+        'columns' => [
+            0 => 'border-left: 3px solid #A9827E; background: #EDD3D1;',
+            1 => 'border-left: 3px solid #5F7086; background: #A7B3C3;',
+            2 => 'border-left: 3px solid #84A777; background: #D7EECE;',
+            3 => 'border-left: 3px solid #80AB6E; background: #98CF7E;',
+        ],
+    ];
+    public $_text = [
+        'titles' => [
+            0 => 'Марка 20м',
+            1 => 'Марка 30м',
+            2 => 'Ботанический сад 20м',
+            3 => 'Ботанический сад 30м',
+        ],
+        'columns' => [
+            0 => 'Lorem ipsum dolor',
+            1 => 'Lorem ipsum dolor sit amet',
+            2 => 'Lorem ipsum dolor sit amet, consectetur',
+            3 => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.',
+        ],
+    ];
+
     public function getRandomTitleStyle()
     {
         $index = mt_rand(0,3);
@@ -141,27 +318,5 @@ class BaseModel extends ActiveRecord
     {
         $index = mt_rand(0,3);
         return $this->_text['columns'][$index];
-    }
-    public function getTimesArray()
-    {
-        $hourBegin = 9;
-        $countHours = 14;
-
-        $result = [];
-
-        for($i = 0; $i < $countHours; $i++) {
-            $result[] = $hourBegin + $i;
-        }
-        return $result;
-    }
-
-    public function getColumns()
-    {
-        if(!$model = Place::find()->where(['in', 'id', $this->_config['places']])->all()) {
-            $model = $this;
-        }
-        return Yii::$app->controller->renderPartial('//site/columns', [
-            'model' => $model,
-        ]);
     }
 }
