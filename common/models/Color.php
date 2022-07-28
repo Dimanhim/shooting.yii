@@ -23,6 +23,9 @@ class Color extends BaseModel
     const COLOR_ID_1 = 7;                         // для единичного клиента
     const COLOR_ID_2 = 8;                        // для постоянного клиента
     const COLOR_TIMETABLE_DEFAULT = 9;          // для заявок по умолчанию
+
+    const GROUP_PLACE = 1;
+    const GROUP_TIMETABLE_RECORD = 2;
     /**
      * {@inheritdoc}
      */
@@ -37,9 +40,10 @@ class Color extends BaseModel
     public function rules()
     {
         return [
-            [['name', 'background'], 'required'],
+            [['name', 'background', 'group_id'], 'required'],
             [['name', 'background', 'border', 'text'], 'string', 'max' => 255],
             [['description'], 'string'],
+            [['group_id'], 'integer']
         ];
     }
 
@@ -49,6 +53,7 @@ class Color extends BaseModel
     public function attributeLabels()
     {
         $attributeLabels = [
+            'group_id' => 'Группа',
             'name' => 'Название',
             'description' => 'Описание',
             'background' => 'Фон',
@@ -57,6 +62,22 @@ class Color extends BaseModel
 
         ];
         return array_merge(parent::attributeLabels(), $attributeLabels);
+    }
+
+    public static function getGroups()
+    {
+        return [
+            self::GROUP_PLACE               => 'Стрельбища',
+            self::GROUP_TIMETABLE_RECORD    => 'Расписание',
+        ];
+    }
+
+    public function getGroupName()
+    {
+        if($this->group_id && array_key_exists($this->group_id, self::getGroups())) {
+            return self::getGroups()[$this->group_id];
+        }
+        return false;
     }
 
     /**

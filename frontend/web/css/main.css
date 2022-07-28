@@ -148,6 +148,7 @@ body.body-gray {
   padding-top: 1px;
   padding-bottom: 1px;
   font-size: 10px;
+  min-height: 30px;
 }
 .column-calendar-block {
   align-self: center;
@@ -162,6 +163,8 @@ body.body-gray {
 }
 .column-calendar-time {
   font-style: italic;
+  padding-left: 10px;
+  font-size: 12px;
 }
 .calendar-column-body-item {
   padding: 0.25em;
@@ -170,6 +173,8 @@ body.body-gray {
   -moz-border-radius: 2px;
   border-radius: 2px;
   cursor: pointer;
+  z-index: 999;
+  min-height: 30px;
 }
 .calendar-column-body-item:first-child {
 

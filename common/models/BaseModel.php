@@ -12,6 +12,8 @@ class BaseModel extends ActiveRecord
 {
     const CACHE_DURATION = 3600 * 24 * 7;
 
+    public $_user;
+
     protected $_config = [];
 
     protected $_default_values = [
@@ -34,6 +36,7 @@ class BaseModel extends ActiveRecord
         /** PLACES */
         $this->getCachePlaces();
 
+        $this->_user = User::findOne(Yii::$app->user->id);
 
 
 
@@ -153,6 +156,7 @@ class BaseModel extends ActiveRecord
         $model = Place::find()->where(['in', 'id', $this->_config[$this->getCacheName('places')]])->all();
         return Yii::$app->controller->renderPartial('//site/columns', [
             'model' => $model,
+            'date' => $this->getDateCash(true)
         ]);
     }
 

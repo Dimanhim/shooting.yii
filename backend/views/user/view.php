@@ -35,6 +35,22 @@ $this->params['breadcrumbs'][] = $this->title;
             'email:email',
             'statusName',
             [
+                'attribute' => 'right_ids',
+                'format' => 'raw',
+                'value' => function($data) {
+                    if($userRights = $data->rights) {
+                        $str = '<ul class="pdl10">';
+                        foreach($userRights as $userRight) {
+                            if($userRight->rightName) {
+                                $str .= "<li>{$userRight->rightName}</li>";
+                            }
+                        }
+                        $str .= '</ul>';
+                        return $str;
+                    }
+                }
+            ],
+            [
                 'attribute' => 'created_at',
                 'value' => function($data) {
                     return date('d.m.Y', $data->created_at);

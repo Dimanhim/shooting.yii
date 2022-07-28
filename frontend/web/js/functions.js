@@ -76,7 +76,6 @@ function alignColumns() {
             height: height,
         });
     });
-    //console.log('itemColumns', itemColumns)
     timesArray.forEach((item) => {
         let heights = [];
         itemColumns.forEach((column) => {
@@ -175,13 +174,12 @@ function setCashPlaces() {
         type: 'GET',
         data: {data: places},
         success: function (res) {
-            console.log(res);
             updateTable();
             //window.location.reload();
             return false;
         },
         error: function () {
-            alert('Error!');
+            console.log('Error!');
         }
     });
 }
@@ -229,6 +227,10 @@ function removePreloader() {
  * END loader
  * */
 
+
+/**
+ * делает запрос раз в 5 секунд и если есть новые записи, обновляет таблицу
+ * */
 function updateTimeoutMain() {
     setTimeout(function() {
         $.get('site/update-main', function(res) {
@@ -236,10 +238,54 @@ function updateTimeoutMain() {
                 updateTable();
                 console.log('update table')
             }
-            console.log('request')
+            //console.log('request')
             updateTimeoutMain();
         })
     }, 5000)
+}
+
+/**
+ * инициализировать перетаскивание в таблице
+ * */
+
+function initDragNDrop() {
+    let dragObj,
+        dropObj,
+        start_time,
+        start_timetable_id,
+        stop_date,
+        stop_time,
+        stop_place;
+
+
+
+
+    $('.column-item-o:not(.column-line-o)').draggable({
+        start: function (event, ui) {
+            dragObj = $(event.target);
+            start_time = dragObj.attr('data-time');
+            start_timetable_id = dragObj.attr('data-id');
+        }
+    });
+    $('.column-line-o').droppable({
+        drop: function (event, ui) {
+            dropObj = $(event.target);
+            stop_time = dropObj.attr('data-time');
+            stop_date = dropObj.attr('data-date');
+            stop_place = dropObj.attr('data-place');
+
+            console.log('start_time', start_time);
+            console.log('start_timetable_id', start_timetable_id);
+            console.log('stop_time', stop_time);
+            console.log('stop_date', stop_date);
+
+            $.get('/timetable/drop-record', {start_timetable_id: start_timetable_id, start_time: start_time, stop_time: stop_time, stop_date: stop_date, stop_place: stop_place}, function(json) {
+                if(json.result) {
+                    updateTable();
+                }
+            });
+        }
+    });
 }
 
 
@@ -250,7 +296,6 @@ function updateTimeoutMain() {
 function updateTable() {
     let date = new Date();
     let time_begin = date.getTime();
-    console.log('update');
     $.ajax({
         url: '/site/update-table',
         type: 'GET',
@@ -261,9 +306,10 @@ function updateTable() {
             let date = new Date();
             let time_end = date.getTime();
             console.log('duration ms ', (time_end - time_begin));
+            initDragNDrop();
         },
         error: function () {
-            alert('Error!');
+            console.log('Error!');
         }
     });
 }

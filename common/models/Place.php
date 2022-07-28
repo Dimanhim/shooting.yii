@@ -92,6 +92,7 @@ class Place extends BaseModel
         ) {
             foreach($timetables as $timetable) {
                 $result[] = [
+                    'id' => $timetable->id,
                     'name' => $timetable->name,
                     'phone' => $timetable->phone,
                     'description' => $timetable->description,
@@ -127,5 +128,9 @@ class Place extends BaseModel
             }
         }
         return $str;
+    }
+    public function getColor()
+    {
+        return $this->hasOne(Color::className(), ['id' => 'color_id']);
     }
 }

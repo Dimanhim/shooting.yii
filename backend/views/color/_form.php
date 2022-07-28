@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\widgets\ColorInput;
+use yii\helpers\ArrayHelper;
+use common\models\Color;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Color */
@@ -14,6 +16,8 @@ use kartik\widgets\ColorInput;
     <?php $form = ActiveForm::begin(); ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'group_id')->dropDownList(Color::getGroups(), ['prompt' => '[Не выбрано]']) ?>
 
     <?= $form->field($model, 'background')->widget(ColorInput::className(), [
         'options' => ['placeholder' => 'Выберите цвет'],

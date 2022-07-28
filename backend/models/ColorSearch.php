@@ -18,7 +18,7 @@ class ColorSearch extends Color
     {
         return [
             [['id', 'is_active', 'deleted', 'position', 'created_at', 'updated_at'], 'integer'],
-            [['unique_id', 'name', 'value'], 'safe'],
+            [['unique_id', 'name', 'value', 'group_id'], 'safe'],
         ];
     }
 
@@ -59,6 +59,7 @@ class ColorSearch extends Color
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'group_id' => $this->group_id,
             'is_active' => $this->is_active,
             'deleted' => $this->deleted,
             'position' => $this->position,

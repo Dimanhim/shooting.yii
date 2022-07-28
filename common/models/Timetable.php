@@ -109,4 +109,21 @@ class Timetable extends BaseModel
         $color = Color::findOne(Color::COLOR_TIMETABLE_DEFAULT);
         return $this->getStyles($color->background, $color->border, $color->text);
     }
+    public function getPlace()
+    {
+        return $this->hasOne(Place::className(), ['id' => 'place_id']);
+    }
+    public function getColor()
+    {
+        return $this->hasOne(Color::className(), ['id' => 'color_id']);
+    }
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
+    public function getColorsArray()
+    {
+
+    }
 }

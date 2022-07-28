@@ -22,9 +22,9 @@ use common\models\Role;
             <?php ActiveForm::end(); ?>
         </div>
         <?php if(!$model->isNewRecord) : ?>
-            <?= $this->render('_rights', [
+            <?/*= $this->render('_rights', [
                     'model' => $model,
-            ]) ?>
+            ])*/ ?>
         <?php endif; ?>
     </div>
 

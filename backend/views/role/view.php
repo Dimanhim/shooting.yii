@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model common\models\Role */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Роли', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Права', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => 'Вы уверены, что хотите удалить роль?',
+                'confirm' => 'Вы уверены, что хотите удалить право?',
                 'method' => 'post',
             ],
         ]) ?>

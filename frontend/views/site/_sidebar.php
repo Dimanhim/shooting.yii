@@ -88,6 +88,7 @@ use common\models\Street;
     </div>
 </div>
 
+<?php if($model->_user->getRight(\common\models\UserRight::RIGHT_2)) : ?>
 <!-- MY CALENDARS -->
 <div class="panel-block">
     <div class="accordion">
@@ -116,6 +117,7 @@ use common\models\Street;
         </div>
     </div>
 </div>
+<?php endif; ?>
 
 <!-- OTHER CALENDARS -->
 <div class="panel-block">

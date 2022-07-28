@@ -9,6 +9,7 @@ use frontend\models\TimetableSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * TimetableController implements the CRUD actions for Timetable model.
@@ -157,5 +158,26 @@ class TimetableController extends Controller
             }
         //}
         return json_encode($responce);
+    }
+
+    public function actionDropRecord($start_timetable_id, $start_time, $stop_time, $stop_date, $stop_place)
+    {
+        $responce = ['result' => false];
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        if(Yii::$app->request->isAjax) {
+            if($start_timetable_id && $start_time && $stop_time && $stop_date && $stop_place) {
+                if($timetable = Timetable::findOne($start_timetable_id)) {
+                    $timeDiff = $timetable->time_from - $timetable->time_to;
+                    $timetable->time_from = $stop_time;
+                    $timetable->time_to = $stop_time + $timeDiff;
+                    $timetable->date = $stop_date;
+                    $timetable->place_id = $stop_place;
+                    if($timetable->save()) {
+                        $responce['result'] = true;
+                    }
+                }
+            }
+        }
+        return $responce;
     }
 }

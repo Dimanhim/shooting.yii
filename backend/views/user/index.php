@@ -30,7 +30,22 @@ $this->params['breadcrumbs'][] = $this->title;
             'username',
             'email:email',
             'status' => 'statusName',
-            //'role_id',
+            [
+                'attribute' => 'right_ids',
+                'format' => 'raw',
+                'value' => function($data) {
+                    if($userRights = $data->rights) {
+                        $str = '<ul class="pdl10">';
+                        foreach($userRights as $userRight) {
+                            if($userRight->rightName) {
+                                $str .= "<li>{$userRight->rightName}</li>";
+                            }
+                        }
+                        $str .= '</ul>';
+                        return $str;
+                    }
+                }
+            ],
             //'created_at',
             //'updated_at',
             //'verification_token',

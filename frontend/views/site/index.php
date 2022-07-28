@@ -27,8 +27,8 @@ $dateCache = $model->getDateCash();
     to center middle add class modal-dialog-centered to modal-dialog
     -->
     <div id="view-modal">
-        <?= $this->render('_modal_view') ?>
-        <?= $this->render('_modal_result') ?>
+        <?//= $this->render('_modal_view') ?>
+        <?//= $this->render('_modal_result') ?>
     </div>
     <div id="create-modal"></div>
     <div id="view-modal"></div>

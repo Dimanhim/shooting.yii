@@ -62,8 +62,43 @@ $(document).ready(function() {
     $('body').on('click', '.column-item-o:not(.column-line-o)', function(e) {
         e.preventDefault();
         e.stopPropagation();
+        let timetable_id = $(this).attr('data-id');
+        $.ajax({
+            url: 'site/show-view',
+            type: 'GET',
+            data: {id: timetable_id},
+            success: function (res) {
+                $('#view-modal').html(res);
+                $('#timetable-item').modal('show');
+            },
+            error: function () {
+                alert('Error!');
+            }
+        });
+    });
 
-        //$('#timetable-item').modal('show');
+    /**
+     * Изменение цвета плашки в расписании через окно просмотра
+     * */
+    $('body').on('change', '.timetable-change-color-o', function(e) {
+        e.preventDefault();
+        let id = $(this).attr('data-id');
+        let color_id = $(this).val();
+        $.ajax({
+            url: 'site/change-timetable-color',
+            type: 'GET',
+            data: {id: id, color_id: color_id},
+            success: function (json) {
+                let res = JSON.parse(json);
+                if(res.result) {
+                    updateTable();
+                }
+                return false;
+            },
+            error: function () {
+                alert('Error!');
+            }
+        });
     });
 
     /**
@@ -130,7 +165,7 @@ $(document).ready(function() {
     //showCreateModal();
 
 
-
+    initDragNDrop();
 
     alignColumns();
 

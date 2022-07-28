@@ -2,16 +2,18 @@
 
 namespace backend\controllers;
 
-use common\models\Color;
-use backend\models\ColorSearch;
+use Yii;
+use common\models\Role;
+use common\models\User;
+use backend\models\RoleSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * ColorController implements the CRUD actions for Color model.
+ * RoleController implements the CRUD actions for Role model.
  */
-class ColorController extends Controller
+class RoleController extends Controller
 {
     /**
      * @inheritDoc
@@ -32,13 +34,13 @@ class ColorController extends Controller
     }
 
     /**
-     * Lists all Color models.
+     * Lists all Role models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new ColorSearch();
+        $searchModel = new RoleSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -48,8 +50,8 @@ class ColorController extends Controller
     }
 
     /**
-     * Displays a single Color model.
-     * @param int $id ID
+     * Displays a single Role model.
+     * @param int $id
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -61,31 +63,28 @@ class ColorController extends Controller
     }
 
     /**
-     * Creates a new Color model.
+     * Creates a new Role model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new Color();
+        $model = new Role();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post()) && $model->validate() && $model->save()) {
+                return $this->redirect(['index']);
             }
-        } else {
-            $model->loadDefaultValues();
         }
-
         return $this->render('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Updates an existing Color model.
+     * Updates an existing Role model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $id ID
+     * @param int $id
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -94,7 +93,6 @@ class ColorController extends Controller
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            //return $this->redirect(['view', 'id' => $model->id]);
             return $this->redirect(['index']);
         }
 
@@ -104,9 +102,9 @@ class ColorController extends Controller
     }
 
     /**
-     * Deletes an existing Color model.
+     * Deletes an existing Role model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $id ID
+     * @param int $id
      * @return \yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -118,18 +116,64 @@ class ColorController extends Controller
     }
 
     /**
-     * Finds the Color model based on its primary key value.
+     * Finds the Role model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $id ID
-     * @return Color the loaded model
+     * @param int $id
+     * @return Role the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Color::findOne(['id' => $id])) !== null) {
+        if (($model = Role::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+
+
+
+
+
+
+
+
+    /**
+     * https://itreviewchannel.ru/yii2-kontrol-dostupa-na-osnove-rolej-role-based-access-control/
+     */
+    public function actionCreateRole()
+    {
+        echo "<pre>";
+        print_r(Yii::$app->authManager->getRoles());
+        echo "</pre>";
+        exit;
+        /*
+         * Добавляем роли
+         *
+        $roleAdministrator = Yii::$app->authManager->createRole('administrator');
+        $roleAdministrator->description = 'Администратор';
+        Yii::$app->authManager->add($roleAdministrator);
+
+        $roleModerator = Yii::$app->authManager->createRole('moderator');
+        $roleModerator->description = 'Модератор';
+        Yii::$app->authManager->add($roleModerator);
+
+        $roleUser = Yii::$app->authManager->createRole('user');
+        $roleUser->description = 'Пользователь';
+        Yii::$app->authManager->add($roleUser);
+        */
+        /*
+         * Привязываем роль к пользователю
+        $ivanov = User::findOne(1);
+        $roleAdministrator = Yii::$app->authManager->getRole('administrator');
+        Yii::$app->authManager->assign($roleAdministrator, $ivanov->id);
+        */
+        /*
+         * Удаляем роль
+        $roleModerator = Yii::$app->authManager->createRole('user');
+        Yii::$app->authManager->remove($roleModerator);
+        */
+        return 'success';
     }
 }

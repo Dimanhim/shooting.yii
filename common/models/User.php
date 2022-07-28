@@ -6,6 +6,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 
 /**
@@ -29,6 +30,13 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
 
+    public $right_ids;
+    public $_right_model;
+
+    public function __construct()
+    {
+        $this->_right_model = new UserRight();
+    }
 
     /**
      * {@inheritdoc}
@@ -57,7 +65,7 @@ class User extends ActiveRecord implements IdentityInterface
             [['username', 'password'], 'required'],
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
-            [['role_id'], 'integer'],
+            [['right_ids'], 'safe'],
             [['name', 'email'], 'string', 'max' => 255],
         ];
     }
@@ -72,7 +80,7 @@ class User extends ActiveRecord implements IdentityInterface
             'statusName' => 'Статус',
             'created_at' => 'Создан',
             'updated_at' => 'Изменен',
-            'role_id' => 'Роль',
+            'right_ids' => 'Права',
         ];
     }
 
@@ -80,7 +88,27 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->status = self::STATUS_ACTIVE;
         $this->password_hash = Yii::$app->security->generatePasswordHash($this->password);
+        UserRight::deleteAll(['user_id' => $this->id]);
+        if($this->right_ids) {
+            foreach ($this->right_ids as $rightId) {
+                $userRight = new UserRight();
+                $userRight->user_id = $this->id;
+                $userRight->right_id = $rightId;
+                $userRight->save();
+            }
+        }
         return parent::beforeSave($insert);
+    }
+
+    public function afterFind()
+    {
+        $this->right_ids = ArrayHelper::map(UserRight::find()->where(['user_id' => $this->id])->asArray()->all(), 'id', 'right_id');
+        return parent::afterFind();
+    }
+
+    public function getRights()
+    {
+        return $this->hasMany(UserRight::className(), ['user_id' => 'id']);
     }
 
     public static function getStatuses()
@@ -255,5 +283,10 @@ class User extends ActiveRecord implements IdentityInterface
     public static function getUser()
     {
         return self::findOne(Yii::$app->user->id);
+    }
+
+    public function getRight($rightName)
+    {
+        return UserRight::find()->where(['user_id' => $this->id, 'right_id' => $rightName])->exists();
     }
 }

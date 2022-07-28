@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\models\TimetableViewForm;
 use common\components\Helper;
 use common\models\BaseModel;
 use common\models\TimetableForm;
@@ -290,6 +291,22 @@ class SiteController extends Controller
         ];
         return json_encode($responce);
     }
+    public function actionShowView()
+    {
+       // if(Yii::$app->request->isAjax) {
+            if($model = Timetable::findOne(Yii::$app->request->get('id'))) {
+                $form = new TimetableViewForm();
+                $form->color_id = $model->color_id;
+
+                return $this->renderPartial('_modal_view', [
+                    'model' => $model,
+                    'formModel' => $form,
+                ]);
+            }
+        //}
+
+        return false;
+    }
     /**
     AJAX
      */
@@ -405,5 +422,18 @@ class SiteController extends Controller
         $timeBegin = time() - 10;
         $timeEnd = time();
         return Timetable::find()->select(['created_at'])->where(['between', 'created_at', $timeBegin, $timeEnd])->exists();
+    }
+    public function actionChangeTimetableColor()
+    {
+        $responce = [
+            'result' => false,
+        ];
+        $id = Yii::$app->request->get('id');
+        $color_id = Yii::$app->request->get('color_id');
+        if($id && $color_id && ($timetable = Timetable::findOne($id))) {
+            $timetable->color_id = $color_id;
+            if($timetable->save()) $responce['result'] = true;
+        }
+        return json_encode($responce);
     }
 }

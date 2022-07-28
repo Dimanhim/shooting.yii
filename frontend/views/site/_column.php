@@ -19,7 +19,7 @@ $columnValues = $model->getColumnValues();
         </div>
         <div class="calendar-column-body">
             <?php foreach(Helper::getTimesArray() as $time) : ?>
-            <div class="column-line column-line-o" data-time="<?= Helper::formatTimeFromHours($time) ?>" data-place="<?= $model->id ?>">
+            <div class="column-line column-line-o" data-time="<?= Helper::formatTimeFromHours($time) ?>" data-date="<?= $date ?>" data-place="<?= $model->id ?>">
                 <div class="row">
                     <div class="col-sm-1 column-calendar-block">
                         <div class="column-calendar-time">

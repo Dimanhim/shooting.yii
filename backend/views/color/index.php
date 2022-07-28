@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use common\models\Color;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\ColorSearch */
@@ -30,6 +31,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'name',
             'description',
+            [
+                'attribute' => 'group_id',
+                'value' => function($data) {
+                    return $data->getGroupName();
+                },
+                'filter' => Color::getGroups(),
+            ],
             [
                 'attribute' => 'background',
                 'format' => 'raw',

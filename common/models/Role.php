@@ -19,6 +19,8 @@ use Yii;
  */
 class Role extends BaseModel
 {
+
+
     /**
      * {@inheritdoc}
      */

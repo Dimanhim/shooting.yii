@@ -16,7 +16,8 @@ class m220621_095954_colors extends Migration
         $this->createTable('{{%colors}}', [
             'id'                    => Schema::TYPE_PK,
             'unique_id'             => Schema::TYPE_STRING . ' NOT NULL',
-
+            
+            'group_id'              => Schema::TYPE_INTEGER . ' NOT NULL',
             'name'                  => Schema::TYPE_STRING . ' NOT NULL',
             'description'           => Schema::TYPE_TEXT,
             'background'            => Schema::TYPE_STRING . ' NOT NULL',
