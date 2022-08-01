@@ -18,6 +18,16 @@ function deleteColumn(jObj) {
 }
 
 /**
+ * удаление временной колонки
+ * */
+function deleteColumnPlaceDate(jObj) {
+    let id = jObj.attr('data-id');
+    let date = jObj.attr('data-date');
+
+    setCashPlaceDates(id, date);
+
+}
+/**
  * убирает чекбокс
  *
  * */
@@ -62,38 +72,41 @@ function getTimeArray() {
  * */
 function alignColumns() {
     if($(window).width() < 576) return false;
-    let timesArray = getTimeArray();
+    $('.column-row-o').each(function (ind, elem) {
+        let timesArray = getTimeArray();
 
-    let columnsHeight = [];
-    let itemColumns = [];
+        let columnsHeight = [];
+        let itemColumns = [];
 
-    $('.column-line-o').each(function(index, element) {
-        let el = $(element);
-        let time = el.attr('data-time');
-        let height = el.height();
-        itemColumns.push({
-            time: time,
-            height: height,
+        $(elem).find('.column-line-o').each(function(index, element) {
+            let el = $(element);
+            let time = el.attr('data-time');
+            let height = el.height();
+            itemColumns.push({
+                time: time,
+                height: height,
+            });
         });
-    });
-    timesArray.forEach((item) => {
-        let heights = [];
-        itemColumns.forEach((column) => {
-            if(column.time == item) {
-                heights.push(column.height);
-            }
+        timesArray.forEach((item) => {
+            let heights = [];
+            itemColumns.forEach((column) => {
+                if(column.time == item) {
+                    heights.push(column.height);
+                }
+            });
+            let maxHeight = Math.max.apply(null, heights);
+            columnsHeight.push({
+                time: item,
+                height: maxHeight,
+            });
         });
-        let maxHeight = Math.max.apply(null, heights);
-        columnsHeight.push({
-            time: item,
-            height: maxHeight,
-        });
-    });
-    checkHeights(columnsHeight);
+        checkHeights(columnsHeight, $(elem));
+    })
+
 }
-function checkHeights(arr) {
+function checkHeights(arr, jObj) {
     arr.forEach((item) => {
-        $(`.column-line[data-time="${item.time}"]`).height(item.height);
+        jObj.find(`.column-line[data-time="${item.time}"]`).height(item.height);
     });
 }
 
@@ -109,7 +122,45 @@ function initDatepickerForm() {
     $('.select-date-form').datepicker({
         defaultDate: $('#main-o').attr('data-date'),
     });
+    $('.change-date-column-o').datepicker();
 }
+
+function initDatepicker() {
+    /**
+     * работа DatePicker справа вверху
+     * */
+    $('#select-date').datepicker({
+        defaultDate: $('#main-o').attr('data-date'),
+    }).on('change', function() {
+        let date = $(this).val();
+        setCashDate(date);
+    });
+    /**
+     * работа DatePicker в сайдбаре
+     * */
+
+    $('#panel-datepicker').datepicker({
+        defaultDate: $('#main-o').attr('data-date'),
+    }).on('change', function() {
+        let date = $(this).val();
+        setCashDate(date);
+    });
+    $('.change-date-column-o').datepicker().on('change', function() {
+        console.log('change', $(this));
+        let value = $(this).val();
+        let place_id = $(this).attr('data-place');
+        console.log('place_id', place_id)
+        console.log('value', value)
+        $.get('timetable/set-place-date', {place_id: place_id, date: value}, function(data) {
+            if(data.result) {
+                updateTable();
+            }
+            console.log('data', data)
+        });
+
+    });
+}
+
 
 function maskInit() {
     $(".phone-mask").inputmask({"mask": "+7 (999) 999-9999", "clearIncomplete": true});
@@ -118,12 +169,12 @@ function maskInit() {
 /**
  * показывает форму создания события
  * */
-function showCreateModal(time, place) {
+function showCreateModal(time, date, place) {
     let action = '/site/show-create-modal'
     $.ajax({
         url: action,
         type: 'GET',
-        data: {time: time, place: place},
+        data: {time: time, date: date, place: place},
         success: function (json) {
             let data = JSON.parse(json);
             if(data.result) {
@@ -183,6 +234,26 @@ function setCashPlaces() {
         }
     });
 }
+/**
+ * устанавливает в кэш новое доп. значение стрельбища на дату
+ * */
+function setCashPlaceDates(id, date) {
+    $.ajax({
+        url: 'site/change-place-dates',
+        type: 'GET',
+        data: {id: id, date: date},
+        success: function (data) {
+            console.log(data)
+            updateTable();
+            //window.location.reload();
+            return false;
+        },
+        error: function () {
+            console.log('Error!');
+        }
+    });
+}
+
 /**
  * добавляет время ДО в форме timetable
  * */
@@ -265,6 +336,8 @@ function initDragNDrop() {
             dragObj = $(event.target);
             start_time = dragObj.attr('data-time');
             start_timetable_id = dragObj.attr('data-id');
+
+
         }
     });
     $('.column-line-o').droppable({
@@ -278,8 +351,10 @@ function initDragNDrop() {
             console.log('start_timetable_id', start_timetable_id);
             console.log('stop_time', stop_time);
             console.log('stop_date', stop_date);
+            console.log('stop_place', stop_place);
 
             $.get('/timetable/drop-record', {start_timetable_id: start_timetable_id, start_time: start_time, stop_time: stop_time, stop_date: stop_date, stop_place: stop_place}, function(json) {
+                console.log(json)
                 if(json.result) {
                     updateTable();
                 }
@@ -301,11 +376,13 @@ function updateTable() {
         type: 'GET',
         success: function (res) {
             $('.column-o').remove();
-            $('.column-sidebar-o').after(res);
+            //$('.column-sidebar-o').after(res);
+            $('.main-columns-o').html(res);
             alignColumns();
             let date = new Date();
             let time_end = date.getTime();
             console.log('duration ms ', (time_end - time_begin));
+            initDatepicker();
             initDragNDrop();
         },
         error: function () {

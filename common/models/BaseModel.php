@@ -3,6 +3,7 @@
 namespace common\models;
 
 use common\components\Helper;
+use PHPUnit\TextUI\Help;
 use Yii;
 use yii\base\ErrorException;
 use yii\behaviors\TimestampBehavior;
@@ -11,23 +12,21 @@ use yii\db\ActiveRecord;
 class BaseModel extends ActiveRecord
 {
     const CACHE_DURATION = 3600 * 24 * 7;
+    const COLUMN_ROWS = 6;
 
     public $_user;
 
     protected $_config = [];
 
     protected $_default_values = [
-        'places' => []
+        'places' => [],
+        'places_date' => [],
+        'temp_places' => [],
     ];
 
-    /*protected $_config = [
-        'places' => [
-            1,3,4
-        ],
-        'date' => '',
-        'date_timestamp' => '',
-    ];*/
-
+    /**
+     * BaseModel constructor.
+     */
     public function __construct()
     {
         /** DATE */
@@ -36,17 +35,27 @@ class BaseModel extends ActiveRecord
         /** PLACES */
         $this->getCachePlaces();
 
+        /** TEMP PLACES 0*/
+        $this->getCacheTempPlaces();
+
         $this->_user = User::findOne(Yii::$app->user->id);
+    }
 
-
-
-        //$date = '09.07.2022';
-        //$this->_config['date'] = $date;
-        //$this->_config['date_timestamp'] = strtotime($date);
+    /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->_config;
     }
 
 
-
+    /**
+     * @param null $background
+     * @param null $border
+     * @param null $text
+     * @return string
+     */
     public function getStyles($background = null, $border = null, $text = null)
     {
         $str = '';
@@ -55,10 +64,6 @@ class BaseModel extends ActiveRecord
         if($text) $str .= 'color: '.$text.';';
         return $str;
     }
-
-
-
-
 
     /**
      * @param bool $timestamp
@@ -104,6 +109,10 @@ class BaseModel extends ActiveRecord
         ];
     }
 
+    /**
+     * @param bool $insert
+     * @return bool
+     */
     public function beforeSave($insert)
     {
         if($this->isNewRecord) {
@@ -113,6 +122,9 @@ class BaseModel extends ActiveRecord
         return parent::beforeSave($insert);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getColor()
     {
         return $this->hasOne(Color::className(), ['id' => 'color_id']);
@@ -139,6 +151,9 @@ class BaseModel extends ActiveRecord
         return 'background: #fff; color: #000;';
     }
 
+    /**
+     * @return string
+     */
     public function getBackgroundColor()
     {
         if($this->color && $this->color->background) {
@@ -153,13 +168,63 @@ class BaseModel extends ActiveRecord
      */
     public function getColumns()
     {
-        $model = Place::find()->where(['in', 'id', $this->_config[$this->getCacheName('places')]])->all();
-        return Yii::$app->controller->renderPartial('//site/columns', [
-            'model' => $model,
-            'date' => $this->getDateCash(true)
-        ]);
+        $config = $this->_config;
+
+        foreach($config[$this->getCacheName('places')] as $v) {
+            if($v) {
+                $m = Place::findOne($v);
+                $cacheDate = $m->getCacheDate();
+                $result[] = [
+                    'id' => $m->id,
+                    'name' => $m->name,
+                    'background_color' => $m->getBackgroundColor(),
+                    'styles' => $m->getColorStyles(),
+                    'date' => $cacheDate['date'],
+                    'date_timestamp' => $cacheDate['date_timestamp'],
+                    'default' => true,
+                ];
+            }
+        }
+        if($tempPlaces = $config[$this->getCacheName('temp_places')]) {
+            foreach($tempPlaces as $date => $value) {
+                if($value) {
+                    foreach($value as $val) {
+                        $m = Place::findOne($val);
+                        $result[] =[
+                            'id' => $m->id,
+                            'name' => $m->name,
+                            'background_color' => $m->getBackgroundColor(),
+                            'styles' => $m->getColorStyles(),
+                            'date' => $date,
+                            'date_timestamp' => strtotime($date),
+                            'default' => false,
+                        ];
+                    }
+                }
+            }
+        }
+
+        $html = '';
+        $countItem = 0;
+        if($result) {
+            foreach($result as $value) {
+                $html .= Yii::$app->controller->renderPartial('//site/_column', [
+                    'model' => new Place(),
+                    'result' => $value,
+                    'countItem' => $countItem,
+                    'countResult' => count($result),
+                ]);
+                $countItem++;
+            }
+        }
+        return $html;
     }
 
+    /**
+     * @param $placeName
+     * @param $placeValue
+     * @return bool
+     */
     public function isShowed($placeName, $placeValue)
     {
         $config = $this->_config;
@@ -213,7 +278,24 @@ class BaseModel extends ActiveRecord
         $this->_config[$cacheNamePlaces] = Helper::getArrayFromString($places);
     }
 
-
+    /**
+    $array = [
+     * ]
+     */
+    public function setCacheTempPlaces($placesDatesArray) {
+        $cacheNamePlaces = $this->getCacheName('temp_places');
+        $placesString = json_encode($placesDatesArray);
+        $this->setCache($cacheNamePlaces, $placesString);
+        $this->_config[$cacheNamePlaces] = $placesDatesArray;
+    }
+    public function getCacheTempPlaces() {
+        $cacheNamePlaces = $this->getCacheName('temp_places');
+        if(!$this->cacheExists($cacheNamePlaces)) {
+            $this->setCache($cacheNamePlaces, Helper::getStringFromArray($this->_default_values['places']));
+        }
+        $places = $this->getCache($cacheNamePlaces);
+        $this->_config[$cacheNamePlaces] = json_decode($places, true);
+    }
 
 
 

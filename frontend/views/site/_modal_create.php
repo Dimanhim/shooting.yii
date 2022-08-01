@@ -29,7 +29,7 @@ use common\models\Place;
                         <?= $form->field($model, 'name', ['template' => '{input}{error}'])->textInput(['placeholder' => "Имя"]) ?>
                     </div>
                     <div class="col-12">
-                        <?= $form->field($model, 'date', ['template' => '{input}{error}'])->textInput(['placeholder' => "Выберите дату", 'class' => 'form-control select-date-form', 'value' => $model->getDateCash()]) ?>
+                        <?= $form->field($model, 'date', ['template' => '{input}{error}'])->textInput(['placeholder' => "Выберите дату", 'class' => 'form-control select-date-form', 'value' => $date]) ?>
                     </div>
                     <div class="col-12">
                         <?= $form->field($model, 'place_id')->dropDownList(Place::getList(), ['prompt' => '[Не выбрано]', 'value' => $place]) ?>

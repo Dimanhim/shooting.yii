@@ -21,26 +21,14 @@ $(document).ready(function() {
         updateTable();
     });*/
 
-    /**
-     * работа DatePicker справа вверху
-     * */
-    $('#select-date').datepicker({
-        defaultDate: $('#main-o').attr('data-date'),
-    }).on('change', function() {
-        let date = $(this).val();
-        setCashDate(date);
-    });
+    /*$('body').on('click', '.change-date-column-o', function(e) {
+        e.preventDefault();
+        $(this).datepicker();
+    });*/
 
-    /**
-     * работа DatePicker в сайдбаре
-     * */
 
-    $('#panel-datepicker').datepicker({
-        defaultDate: $('#main-o').attr('data-date'),
-    }).on('change', function() {
-        let date = $(this).val();
-        setCashDate(date);
-    });
+
+
 
     $('body').on('change', '.form-check-input-o', function(e) {
         e.preventDefault();
@@ -106,7 +94,12 @@ $(document).ready(function() {
      * */
     $('body').on('click', '.delete-column-o', function(e) {
         e.preventDefault();
-        deleteColumn($(this));
+        if($(this).parents('.column-o').hasClass('temp-column')) {
+            deleteColumnPlaceDate($(this));
+        }
+        else {
+            deleteColumn($(this));
+        }
     });
 
     /**
@@ -133,7 +126,8 @@ $(document).ready(function() {
         e.preventDefault();
         let time = $(this).attr('data-time');
         let place = $(this).attr('data-place');
-        showCreateModal(time, place);
+        let date = $(this).attr('data-date');
+        showCreateModal(time, date, place);
     });
 
     /**
@@ -164,6 +158,7 @@ $(document).ready(function() {
 
     //showCreateModal();
 
+    initDatepicker();
 
     initDragNDrop();
 

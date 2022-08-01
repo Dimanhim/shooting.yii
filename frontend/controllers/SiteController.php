@@ -22,6 +22,7 @@ use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 use common\models\User;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 /**
  * Site controller
@@ -276,7 +277,7 @@ class SiteController extends Controller
     /**
     AJAX
      */
-    public function actionShowCreateModal($time = null, $place = null)
+    public function actionShowCreateModal($time = null, $date = null, $place = null)
     {
         $data = Yii::$app->request->get('param');
         $model = new TimetableForm();
@@ -287,10 +288,15 @@ class SiteController extends Controller
                 'model' => $model,
                 'time' => $time,
                 'place' => $place,
+                'date' => $date,
             ]),
         ];
         return json_encode($responce);
     }
+
+    /**
+     * @return bool|string
+     */
     public function actionShowView()
     {
        // if(Yii::$app->request->isAjax) {
@@ -321,6 +327,10 @@ class SiteController extends Controller
         ]);
     }
 
+    /**
+     * @param $time
+     * @return false|string
+     */
     public function actionGetTimesTo($time)
     {
         $responce = [
@@ -340,6 +350,9 @@ class SiteController extends Controller
         return json_encode($responce);
     }
 
+    /**
+     * @return string
+     */
     public function actionUpdateTable()
     {
         if(Yii::$app->request->isAjax) {
@@ -348,6 +361,9 @@ class SiteController extends Controller
         }
     }
 
+    /**
+     * @return false|string
+     */
     public function actionChangeDate()
     {
         if(Yii::$app->request->isAjax) {
@@ -362,6 +378,10 @@ class SiteController extends Controller
         }
     }
 
+    /**
+     * @param null $action
+     * @return Response
+     */
     public function actionSetNewDate($action = null)
     {
         $model = new BaseModel();
@@ -382,21 +402,11 @@ class SiteController extends Controller
             $model->setCacheDate(date('d.m.Y'));
         }
         return $this->redirect('/');
-
-
-
-
-        /*$date = Yii::$app->request->get('date');
-        if()
-        $model = new BaseModel();
-        $model->setCacheDate($date);
-        $responce = [
-            'result' => true,
-            'date' => $model->getCacheDate(),
-        ];
-        */
     }
 
+    /**
+     * @return false|string
+     */
     public function actionChangePlaces()
     {
         if(Yii::$app->request->isAjax) {
@@ -409,6 +419,7 @@ class SiteController extends Controller
 ;            }
             $model = new BaseModel();
             $model->setCachePlaces($ids);
+            //$model->setCachePlacesDate($ids, $model->getDateCash());
             $responce = [
                 'result' => true,
                 'date' => $model->getCachePlaces(),
@@ -417,12 +428,45 @@ class SiteController extends Controller
         }
     }
 
+    /**
+     * @param $id
+     * @param $date
+     * @return array
+     */
+    public function actionChangePlaceDates($id, $date)
+    {
+        $responce = [
+            'result' => true,
+            'config' => '',
+        ];
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        //if(Yii::$app->request->isAjax) {
+            $model = new BaseModel();
+            $config = $model->getConfig();
+            $placeName = $model->getCacheName('temp_places');
+            if(array_key_exists($date, $config[$placeName])) {
+                $key = array_search($id, $config[$placeName][$date]);
+                unset($config[$placeName][$date][$key]);
+                $model->setCacheTempPlaces($config[$placeName]);
+            }
+            $responce['config'] = $model->getConfig();
+            return $responce;
+        //}
+    }
+
+    /**
+     * @return bool
+     */
     public function actionUpdateMain()
     {
         $timeBegin = time() - 10;
         $timeEnd = time();
         return Timetable::find()->select(['created_at'])->where(['between', 'created_at', $timeBegin, $timeEnd])->exists();
     }
+
+    /**
+     * @return false|string
+     */
     public function actionChangeTimetableColor()
     {
         $responce = [

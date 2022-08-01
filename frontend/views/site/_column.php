@@ -1,25 +1,32 @@
 <?php
 
 use common\components\Helper;
+use common\models\BaseModel;
 
-$titleStyles = $model->getRandomTitleStyle();
+$columnValues = $model->getColumnValues($result['id'], $result['date']);
 
-$columnValues = $model->getColumnValues();
-
+$rows = BaseModel::COLUMN_ROWS;      // по две штуки в ряд
 ?>
-<div class="col-sm column-o">
+<?php if(($countItem == 0) || ($countItem%$rows == 0)) : ?>
+    <div class="row column-row-o">
+<?php endif; ?>
+
+
+<div class="col-sm column-o <?= $result['default'] ? '' : 'temp-column' ?>">
     <div class="calendar-column">
-        <div class="calendar-column-header" style="border-bottom: 1px solid <?= $model->getBackgroundColor() ?>;">
-            <div class="calendar-column-header-text" style="<?= $model->getColorStyles() ?>">
-                <?= $model->name ?>
-                <a href="#" class="delete-column-o" data-id="<?= $model->id ?>">
+        <div class="calendar-column-header" style="border-bottom: 1px solid <?= $result['background_color'] ?> <?//= $model->getBackgroundColor() ?>;">
+            <div class="calendar-column-header-text" style="<?= $result['styles'] ?><?//= $model->getColorStyles() ?>">
+                <?= $result['name'] ?>
+                 -
+                <input class="change-date-column change-date-column-o" value="<?= $result['date'] ?>" data-place="<?= $result['id'] ?>" />
+                <a href="#" class="delete-column-o" data-id="<?= $result['id'] ?>" data-date="<?= $result['date'] ?>">
                     <i class="bi bi-file-earmark-excel"></i>
                 </a>
             </div>
         </div>
         <div class="calendar-column-body">
             <?php foreach(Helper::getTimesArray() as $time) : ?>
-            <div class="column-line column-line-o" data-time="<?= Helper::formatTimeFromHours($time) ?>" data-date="<?= $date ?>" data-place="<?= $model->id ?>">
+            <div class="column-line column-line-o" data-time="<?= Helper::formatTimeFromHours($time) ?>" data-date="<?= $result['date'] ?>" data-place="<?= $result['id'] ?>">
                 <div class="row">
                     <div class="col-sm-1 column-calendar-block">
                         <div class="column-calendar-time">
@@ -27,10 +34,12 @@ $columnValues = $model->getColumnValues();
                         </div>
                     </div>
                     <?= $model->getColumnValue($time, $columnValues) ?>
-
                 </div>
             </div>
             <?php endforeach; ?>
         </div>
     </div>
 </div>
+<?php if((($countItem + 1)%$rows) == 0) : ?>
+    </div>
+<?php endif; ?>

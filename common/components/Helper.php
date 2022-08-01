@@ -115,6 +115,16 @@ class Helper extends Model
         return '';
     }
 
+    public static function getJsonFromArray($array)
+    {
+        return $array ? json_encode($array) : '';
+    }
+
+    public static function getArrayFromJson($json)
+    {
+        return $json ? json_decode($json, true) : [];
+    }
+
     public static function getArrayFromString($string)
     {
         return explode(',', $string);

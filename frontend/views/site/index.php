@@ -1,6 +1,16 @@
 <?php
 $this->title = 'Расписание';
 $dateCache = $model->getDateCash();
+$array_cache = [
+        [
+            'place_id' => 1,
+            'date' => '28.07.2022',
+        ],
+        [
+            'place_id' => 2,
+            'date' => '30.07.2022',
+        ],
+];
 ?>
 <header>
     <div class="header">
@@ -18,8 +28,9 @@ $dateCache = $model->getDateCash();
             </div>
 
             <!-- MAIN -->
-            <?= $model->getColumns() ?>
-
+            <div class="col-sm main-columns-o">
+                <?= $model->getColumns() ?>
+            </div>
         </div>
     </div>
     <!-- Modal View timetable item -->

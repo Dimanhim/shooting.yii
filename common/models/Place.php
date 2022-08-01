@@ -77,7 +77,7 @@ class Place extends BaseModel
     /**
      * @return array
      */
-    public function getColumnValues()
+    public function getColumnValues($id, $date)
     {
         $model = new BaseModel();
         $result = [];
@@ -85,8 +85,9 @@ class Place extends BaseModel
         if(
             $timetables = Timetable::find()
                 ->where([
-                    'date' => $model->_config[$this->getCacheName('date_timestamp')],
-                    'place_id' => $this->id,
+                    //'date' => $model->getConfig()[$this->getCacheName('date_timestamp')],
+                    'date' => strtotime($date),
+                    'place_id' => $id,
                 ])
                 ->all()
         ) {
@@ -129,6 +130,10 @@ class Place extends BaseModel
         }
         return $str;
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getColor()
     {
         return $this->hasOne(Color::className(), ['id' => 'color_id']);

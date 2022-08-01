@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\models\BaseModel;
 use common\models\TimetableForm;
 use Yii;
 use common\models\Timetable;
@@ -160,12 +161,21 @@ class TimetableController extends Controller
         return json_encode($responce);
     }
 
+    /**
+     * @param $start_timetable_id
+     * @param $start_time
+     * @param $stop_time
+     * @param $stop_date
+     * @param $stop_place
+     * @return array
+     */
     public function actionDropRecord($start_timetable_id, $start_time, $stop_time, $stop_date, $stop_place)
     {
         $responce = ['result' => false];
         Yii::$app->response->format = Response::FORMAT_JSON;
         if(Yii::$app->request->isAjax) {
             if($start_timetable_id && $start_time && $stop_time && $stop_date && $stop_place) {
+                $stop_date = strtotime($stop_date);
                 if($timetable = Timetable::findOne($start_timetable_id)) {
                     $timeDiff = $timetable->time_from - $timetable->time_to;
                     $timetable->time_from = $stop_time;
@@ -178,6 +188,39 @@ class TimetableController extends Controller
                 }
             }
         }
+        return $responce;
+    }
+
+    /**
+     * @param $place_id
+     * @param $date
+     * @return array
+     */
+    public function actionSetPlaceDate($place_id, $date)
+    {
+        $responce = [
+            'result' => true,
+            'config' => []
+        ];
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $model = new BaseModel();
+        $cacheName = $model->getCacheName('temp_places');
+        $tempPlaces = $model->getConfig()[$cacheName];
+
+        if($tempPlaces && array_key_exists($date, $tempPlaces)) {
+            $arrayForDate = $tempPlaces[$date];
+            $tempPlaces[$date] = array_merge($arrayForDate, [$place_id]);
+            $tempPlaces[$date] = array_unique($tempPlaces[$date]);
+        }
+        else {
+            $tempPlaces[$date][] = $place_id;
+            $tempPlaces[$date] = array_unique($tempPlaces[$date]);
+        }
+
+        $model->setCacheTempPlaces($tempPlaces);
+
+        $responce['config'] = $model->getConfig();
         return $responce;
     }
 }

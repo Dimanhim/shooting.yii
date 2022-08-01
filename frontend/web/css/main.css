@@ -179,6 +179,19 @@ body.body-gray {
 .calendar-column-body-item:first-child {
 
 }
+.change-date-column {
+    background: transparent;
+    color: #fff;
+    border: none
+}
+.temp-column {
+  /*box-shadow: 2px 2px 5px #ccc, -2px -2px 5px #ccc;
+  opacity: 0.8;*/
+  background: rgba(0,0,0,0.1);
+}
+.change-date-column {
+
+}
 div.required:after {
   content: " *";
   color: red;
@@ -248,7 +261,9 @@ BEGIN PRELOADER
   opacity: 0.5;
   display: none;
 }
-
+.ui-datepicker {
+  z-index: 2000 !important;
+}
 /* Safari */
 @-webkit-keyframes spin {
   0% { -webkit-transform: rotate(0deg); }
