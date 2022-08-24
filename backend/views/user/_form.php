@@ -22,13 +22,15 @@ use yii\helpers\ArrayHelper;
 
     <?= $form->field($model, 'password')->passwordInput() ?>
 
-    <?= $form->field($model, 'right_ids')->widget(Select2::classname(), [
+    <?= $form->field($model, 'role')->dropDownList($model->rolesArray, ['prompt' => '--Выбрать--', 'options' => [$model->userRole => ['selected' => true]]]) ?>
+
+    <?/*= $form->field($model, 'right_ids')->widget(Select2::classname(), [
         'data' => $model->_right_model->getRights(),
         'options' => ['placeholder' => 'Выберите права', 'multiple' => true],
         'pluginOptions' => [
             'allowClear' => true,
         ],
-    ]) ?>
+    ])*/ ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

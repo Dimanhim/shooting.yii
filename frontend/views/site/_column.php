@@ -2,6 +2,7 @@
 
 use common\components\Helper;
 use common\models\BaseModel;
+use common\models\User;
 
 $columnValues = $model->getColumnValues($result['id'], $result['date']);
 
@@ -17,8 +18,9 @@ $rows = BaseModel::COLUMN_ROWS;      // по две штуки в ряд
         <div class="calendar-column-header" style="border-bottom: 1px solid <?= $result['background_color'] ?> <?//= $model->getBackgroundColor() ?>;">
             <div class="calendar-column-header-text" style="<?= $result['styles'] ?><?//= $model->getColorStyles() ?>">
                 <?= $result['name'] ?>
-                 -
-                <input class="change-date-column change-date-column-o" value="<?= $result['date'] ?>" data-place="<?= $result['id'] ?>" />
+                 <!--
+                <input class="change-date-column change-date-column-o" value="<?//= $result['date'] ?>" data-place="<?//= $result['id'] ?>" />
+                -->
                 <a href="#" class="delete-column-o" data-id="<?= $result['id'] ?>" data-date="<?= $result['date'] ?>">
                     <i class="bi bi-file-earmark-excel"></i>
                 </a>
@@ -26,11 +28,11 @@ $rows = BaseModel::COLUMN_ROWS;      // по две штуки в ряд
         </div>
         <div class="calendar-column-body">
             <?php foreach(Helper::getTimesArray() as $time) : ?>
-            <div class="column-line column-line-o" data-time="<?= Helper::formatTimeFromHours($time) ?>" data-date="<?= $result['date'] ?>" data-place="<?= $result['id'] ?>">
+            <div class="column-line <?= preg_match('/30/', $time) ? 'time-half' : '' ?> <?php if(!User::isInstructor()) : ?>column-line-o<?php endif; ?>" data-time="<?= Helper::formatTimeFromHours($time) ?>" data-date="<?= $result['date'] ?>" data-place="<?= $result['id'] ?>">
                 <div class="row">
                     <div class="col-sm-1 column-calendar-block">
-                        <div class="column-calendar-time">
-                            <?= $time ?>
+                        <div class="column-calendar-time ">
+                            <span><?= $time ?></span>
                         </div>
                     </div>
                     <?= $model->getColumnValue($time, $columnValues) ?>

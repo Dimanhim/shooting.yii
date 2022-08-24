@@ -1,4 +1,7 @@
 <?php
+
+use common\models\Timetable;
+
 $this->title = 'Расписание';
 $dateCache = $model->getDateCash();
 $array_cache = [
@@ -43,5 +46,14 @@ $array_cache = [
     </div>
     <div id="create-modal"></div>
     <div id="view-modal"></div>
+    <div id="edit-modal"></div>
 </main>
+<style>
+    .column-line, .calendar-column-body-item {
+        height: <?= Timetable::BASE_ROW_hEIGHT ?>px;
+    }
+    .calendar-column-body-item {
+        height: <?= Timetable::getRowHeight(Timetable::BASE_ROW_hEIGHT) ?>px;
+    }
+</style>
 

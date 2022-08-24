@@ -11,7 +11,7 @@ use yii\filters\VerbFilter;
 /**
  * ColorController implements the CRUD actions for Color model.
  */
-class ColorController extends Controller
+class ColorController extends BaseController
 {
     /**
      * @inheritDoc

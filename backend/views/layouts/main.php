@@ -37,9 +37,10 @@ AppAsset::register($this);
     $menuItems = [
         ['label' => 'Клиенты', 'url' => ['/client/index']],
         ['label' => 'Адреса', 'url' => ['/street/index']],
-        ['label' => 'Места', 'url' => ['/place/index']],
+        ['label' => 'Стрельбища', 'url' => ['/place/index']],
+        ['label' => 'Услуги', 'url' => ['/service/index']],
         ['label' => 'Цвета', 'url' => ['/color/index']],
-        ['label' => 'Роли', 'url' => ['/role/index']],
+        ['label' => 'Инструкторы', 'url' => ['/trainer/index']],
         ['label' => 'Пользователи', 'url' => ['/user/index']],
     ];
     if (Yii::$app->user->isGuest) {

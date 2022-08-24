@@ -30,6 +30,43 @@ body.body-gray {
   text-decoration: none;
   color: inherit;
 }
+.not-decoration-link {
+  text-decoration: none;
+}
+.option-input {
+   border: none;
+   background: transparent;
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   appearance: none;
+   width: 50px;
+   color: #0d6efd;
+ }
+.option-input:hover {
+  text-decoration: underline;
+}
+.editable-field-input {
+  display: none;
+}
+.select-date-timetable-view {
+  border: none;
+  color: #0d6efd;
+  cursor: pointer;
+}
+.select-date-timetable-view:hover {
+  text-decoration: underline;
+}
+.form-check-input-selected {
+  padding-left: 2rem;
+}
+.info-message {
+  /*display: none;*/
+  color: #28a745;
+  height: 20px;
+}
+.info-message.error {
+  color: #dc3545;
+}
 .header-menu-content {
   position: absolute;
   top: 45px;
@@ -143,15 +180,18 @@ body.body-gray {
 .column-line {
   display: flex;
   flex-direction: column;
-  border: 1px solid #ddd;
+  border: 1px solid #eee;
   /*padding: 0.5em 0.25em;*/
   padding-top: 1px;
   padding-bottom: 1px;
   font-size: 10px;
-  min-height: 30px;
+  /*min-height: 30px;*/
+}
+.column-line.time-half {
+  border-bottom: 1px solid #ccc;
 }
 .column-calendar-block {
-  align-self: center;
+  /*align-self: center;*/
   padding-right: calc(var(--bs-gutter-x) * .05);
   padding-left: calc(var(--bs-gutter-x) * .05);
 }
@@ -173,8 +213,14 @@ body.body-gray {
   -moz-border-radius: 2px;
   border-radius: 2px;
   cursor: pointer;
-  z-index: 999;
-  min-height: 30px;
+  z-index: 10;
+  /*min-height: 30px;*/
+  overflow: hidden;
+  /*transition: 0.3s;*/
+}
+.calendar-column-body-item:hover {
+  z-index: 100;
+  /*transition: 0.3s;*/
 }
 .calendar-column-body-item:first-child {
 
@@ -199,13 +245,23 @@ div.required:after {
   top: 0;
   right: 20px;
 }
-
+.editable-field-text {
+  min-width: 80px;
+  min-height: 20px;
+  display: inline-block;
+}
+#logs {
+  width: 100%;
+}
 .col-phone-text {
   text-align: center;
   margin-top: 0.25em;
 }
 .timetable-item .modal-header {
   display: block;
+}
+.timetable-item .modal-footer {
+  justify-content: flex-start;
 }
 .modal-header-email {
   display: flex;
@@ -234,7 +290,13 @@ div.required:after {
 }
 .header-item-sign-up-mobile {
   display: none;
+}
 
+.column-line.time-half .column-calendar-time span {
+  display: none;
+}
+.logs-table td, .logs-table th {
+  font-size: 0.8rem;
 }
 /*
 BEGIN PRELOADER
@@ -277,6 +339,12 @@ BEGIN PRELOADER
 /*
 END PRELOADER
 */
+@media (min-width:768px) {
+  .modal-dialog {
+    max-width: 700px;
+  }
+}
+
 @media (max-width:575.98px) {
   .header-items {
     flex-direction: column;

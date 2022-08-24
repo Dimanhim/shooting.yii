@@ -6,13 +6,13 @@ use yii\grid\ActionColumn;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel backend\models\ClientSearch */
+/* @var $searchModel backend\models\ServiceSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Clients';
+$this->title = 'Услуги';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="client-index">
+<div class="service-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -27,9 +27,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
+
             'name',
-            'email:email',
-            'phone',
+            'short_description:ntext',
+            'description:ntext',
+            'price',
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, $model, $key, $index, $column) {

@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\models\Log;
 use common\models\TimetableViewForm;
 use common\components\Helper;
 use common\models\BaseModel;
@@ -9,6 +10,7 @@ use common\models\TimetableForm;
 use common\models\Timetable;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
+use phpDocumentor\Reflection\Types\Expression;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
@@ -280,7 +282,7 @@ class SiteController extends Controller
     public function actionShowCreateModal($time = null, $date = null, $place = null)
     {
         $data = Yii::$app->request->get('param');
-        $model = new TimetableForm();
+        $model = new Timetable();
         $responce = [
             'result' => true,
             'html' => $this->renderPartial('_modal_create', [
@@ -293,24 +295,44 @@ class SiteController extends Controller
         ];
         return json_encode($responce);
     }
+    public function actionShowEditModal($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $responce = [];
+        if(Yii::$app->request->isAjax) {
+            $model = Timetable::findOne($id);
+            if($model->date) $model->date = date('d.m.Y', $model->date);
+            $responce = [
+                'result' => true,
+                'html' => $this->renderPartial('_modal_edit', [
+                    'model' => $model,
+                ]),
+            ];
+        }
+        return $responce;
+    }
 
     /**
      * @return bool|string
      */
     public function actionShowView()
     {
-       // if(Yii::$app->request->isAjax) {
-            if($model = Timetable::findOne(Yii::$app->request->get('id'))) {
-                $form = new TimetableViewForm();
-                $form->color_id = $model->color_id;
+       if(Yii::$app->request->isAjax) {
+           if(!User::isInstructor()) {
+               if($model = Timetable::findOne(Yii::$app->request->get('id'))) {
+                   $form = new TimetableViewForm();
+                   $form->color_id = $model->color_id;
 
-                return $this->renderPartial('_modal_view', [
-                    'model' => $model,
-                    'formModel' => $form,
-                ]);
-            }
-        //}
+                   $logs = Log::find()->where(['timetable_id' => $model->id])->orderBy(['created_at' => SORT_DESC])->all();
 
+                   return $this->renderPartial('_modal_view', [
+                       'model' => $model,
+                       'formModel' => $form,
+                       'logs' => Log::groupLogs($logs),
+                   ]);
+               }
+           }
+        }
         return false;
     }
     /**
@@ -409,6 +431,7 @@ class SiteController extends Controller
      */
     public function actionChangePlaces()
     {
+        Yii::$app->response->format = Response::FORMAT_JSON;
         if(Yii::$app->request->isAjax) {
             if($data = Yii::$app->request->get('data')) {
                 $ids = [];
@@ -417,14 +440,19 @@ class SiteController extends Controller
                 }
 
 ;            }
+
             $model = new BaseModel();
+            file_put_contents('info-log.txt', 'before - '.print_r($model->getCachePlaces(), true)."\n", FILE_APPEND);
             $model->setCachePlaces($ids);
+            file_put_contents('info-log.txt', 'after - '.print_r($model->getCachePlaces(), true)."\n", FILE_APPEND);
             //$model->setCachePlacesDate($ids, $model->getDateCash());
+
             $responce = [
                 'result' => true,
-                'date' => $model->getCachePlaces(),
+                'places' => $model->getCachePlaces(),
+                'adresses' => $this->renderPartial('adress/_adresses')
             ];
-            return json_encode($responce);
+            return $responce;
         }
     }
 

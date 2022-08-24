@@ -34,6 +34,7 @@ $(document).ready(function() {
         e.preventDefault();
         setCashPlaces();
         checkAccordeonCheckboxes();
+        //updatePlaceAccordeon($(this).attr('data-adress'))
     });
 
     /**
@@ -51,18 +52,7 @@ $(document).ready(function() {
         e.preventDefault();
         e.stopPropagation();
         let timetable_id = $(this).attr('data-id');
-        $.ajax({
-            url: 'site/show-view',
-            type: 'GET',
-            data: {id: timetable_id},
-            success: function (res) {
-                $('#view-modal').html(res);
-                $('#timetable-item').modal('show');
-            },
-            error: function () {
-                alert('Error!');
-            }
-        });
+        showViewModal(timetable_id);
     });
 
     /**
@@ -111,6 +101,18 @@ $(document).ready(function() {
         fillTimeTo(time)
     });
 
+    $('body').on('change', '.option-input-from-o', function(e) {
+        e.preventDefault();
+        changeAttribute('time_from', $(this).val(), false, false)
+    });
+
+    $('body').on('change', '.option-input-to-o', function(e) {
+        e.preventDefault();
+        changeAttribute('time_to', $(this).val(), false, false)
+    });
+
+
+
     /**
      * показываем форму создания события по клику на кнопку
      * */
@@ -153,16 +155,64 @@ $(document).ready(function() {
             }
         });
     });
+    /**
+     * submit формы редактирования записи
+     * */
+    $('body').on('submit', '#form-edit-timetable', function(e) {
+        e.preventDefault();
+        let form = $(this);
+        let id = form.attr('data-id');
+        let data = form.serialize();
+        $.ajax({
+            url: form.attr('action'),
+            type: 'GET',
+            data: data,
+            success: function (json) {
+                $('#timetable-edit').modal('hide');
+                $('#edit-modal').html('');
+                showViewModal(json.id)
+                updateTable();
+            },
+            error: function () {
+                console.log('Error!');
+            }
+        });
+    });
+    /**
+     * смена просмотра записи в модали на редактирование
+     * */
+    $('body').on('click', '.btn-edit-timetable-form-o', function(e) {
+        e.preventDefault();
+        let id = $(this).attr('data-id');
+        showEditModal(id);
+    });
+    /**
+     * клик на поле в модальном окне разворачивает его редактирование
+     * */
+    $('body').on('click', '.timetable-editable-view .editable-field-text-o', function(e) {
+        e.preventDefault();
+        let input = $(this).next();
+        input.css('display', 'inherit');
+        $(this).css('display', 'none')
+        input.focus()
+    });
+    $('body').on('blur', '.timetable-editable-view .editable-field-input-o', function(e) {
+        e.preventDefault();
+        let span = $(this).prev();
+        let value = $(this).val();
+        let attribute = $(this).attr('data-attribute');
+        changeAttribute(attribute, value, $(this), span)
+    });
 
 
 
     //showCreateModal();
 
-    initDatepicker();
-
-    initDragNDrop();
-
-    alignColumns();
+    //alignColumns();
 
     updateTimeoutMain();
+
+    initPlugins();
 });
+// https://dwweb.ru/rastyanut_myishkoy.html - растягивание блока мышью на js
+// https://api.jqueryui.com/resizable/ вроде как с использованием jquery-ui

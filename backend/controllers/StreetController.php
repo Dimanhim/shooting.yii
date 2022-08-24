@@ -11,7 +11,7 @@ use yii\filters\VerbFilter;
 /**
  * StreetController implements the CRUD actions for Street model.
  */
-class StreetController extends Controller
+class StreetController extends BaseController
 {
     /**
      * @inheritDoc

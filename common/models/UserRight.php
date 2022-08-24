@@ -27,8 +27,6 @@ class UserRight extends \yii\db\ActiveRecord
     ];
 
 
-
-
     /**
      * {@inheritdoc}
      */

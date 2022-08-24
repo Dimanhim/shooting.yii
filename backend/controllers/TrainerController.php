@@ -2,18 +2,16 @@
 
 namespace backend\controllers;
 
-use Yii;
-use common\models\Role;
-use common\models\User;
-use backend\models\RoleSearch;
+use common\models\Trainer;
+use backend\models\TrainerSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * RoleController implements the CRUD actions for Role model.
+ * TrainerController implements the CRUD actions for Trainer model.
  */
-class RoleController extends BaseController
+class TrainerController extends BaseController
 {
     /**
      * @inheritDoc
@@ -34,13 +32,13 @@ class RoleController extends BaseController
     }
 
     /**
-     * Lists all Role models.
+     * Lists all Trainer models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new RoleSearch();
+        $searchModel = new TrainerSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -50,7 +48,7 @@ class RoleController extends BaseController
     }
 
     /**
-     * Displays a single Role model.
+     * Displays a single Trainer model.
      * @param int $id
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -63,26 +61,29 @@ class RoleController extends BaseController
     }
 
     /**
-     * Creates a new Role model.
+     * Creates a new Trainer model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new Role();
+        $model = new Trainer();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->validate() && $model->save()) {
-                return $this->redirect(['index']);
+            if ($model->load($this->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
             }
+        } else {
+            $model->loadDefaultValues();
         }
+
         return $this->render('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Updates an existing Role model.
+     * Updates an existing Trainer model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id
      * @return string|\yii\web\Response
@@ -93,7 +94,7 @@ class RoleController extends BaseController
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
@@ -102,7 +103,7 @@ class RoleController extends BaseController
     }
 
     /**
-     * Deletes an existing Role model.
+     * Deletes an existing Trainer model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id
      * @return \yii\web\Response
@@ -116,64 +117,18 @@ class RoleController extends BaseController
     }
 
     /**
-     * Finds the Role model based on its primary key value.
+     * Finds the Trainer model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id
-     * @return Role the loaded model
+     * @return Trainer the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Role::findOne(['id' => $id])) !== null) {
+        if (($model = Trainer::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
-
-
-
-
-
-
-
-
-    /**
-     * https://itreviewchannel.ru/yii2-kontrol-dostupa-na-osnove-rolej-role-based-access-control/
-     */
-    public function actionCreateRole()
-    {
-        echo "<pre>";
-        print_r(Yii::$app->authManager->getRoles());
-        echo "</pre>";
-        exit;
-        /*
-         * Добавляем роли
-         *
-        $roleAdministrator = Yii::$app->authManager->createRole('administrator');
-        $roleAdministrator->description = 'Администратор';
-        Yii::$app->authManager->add($roleAdministrator);
-
-        $roleModerator = Yii::$app->authManager->createRole('moderator');
-        $roleModerator->description = 'Модератор';
-        Yii::$app->authManager->add($roleModerator);
-
-        $roleUser = Yii::$app->authManager->createRole('user');
-        $roleUser->description = 'Пользователь';
-        Yii::$app->authManager->add($roleUser);
-        */
-        /*
-         * Привязываем роль к пользователю
-        $ivanov = User::findOne(1);
-        $roleAdministrator = Yii::$app->authManager->getRole('administrator');
-        Yii::$app->authManager->assign($roleAdministrator, $ivanov->id);
-        */
-        /*
-         * Удаляем роль
-        $roleModerator = Yii::$app->authManager->createRole('user');
-        Yii::$app->authManager->remove($roleModerator);
-        */
-        return 'success';
     }
 }

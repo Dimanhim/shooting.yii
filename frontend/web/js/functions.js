@@ -7,14 +7,19 @@ function deleteColumn(jObj) {
     // убираем чекбокс
     unCheckCheckbox(id);
 
+    // устанавливаем новые стрельбища в кэш
     setCashPlaces();
+
+    // обновляем аккордеон
+    //updatePlaceAccordeon(id);
 
     // скрываем аккордеон
     checkAccordeonCheckboxes();
 
-
     // удаляем колонку
     jObj.parents('.column-o').remove();
+
+
 }
 
 /**
@@ -26,6 +31,7 @@ function deleteColumnPlaceDate(jObj) {
 
     setCashPlaceDates(id, date);
 
+    //updatePlaceAccordeon(id);
 }
 /**
  * убирает чекбокс
@@ -57,20 +63,20 @@ function hideAccordeon(jObj) {
     jObj.find('.accordion-collapse-o').removeClass('show');
 }
 
-function getTimeArray() {
+/*function getTimeArray() {
     let times = [9,10,11,12,13,14,15,16,17,18,19,20,21,22];
     let result = [];
     times.forEach((item) => {
         result.push(item * 3600);
     });
     return result;
-}
+}*/
 
 /**
  * Равняет все строки по высоте
  *
  * */
-function alignColumns() {
+/*function alignColumns() {
     if($(window).width() < 576) return false;
     $('.column-row-o').each(function (ind, elem) {
         let timesArray = getTimeArray();
@@ -108,7 +114,7 @@ function checkHeights(arr, jObj) {
     arr.forEach((item) => {
         jObj.find(`.column-line[data-time="${item.time}"]`).height(item.height);
     });
-}
+}*/
 
 /**
  * END AlignColumns
@@ -135,6 +141,16 @@ function initDatepicker() {
         let date = $(this).val();
         setCashDate(date);
     });
+
+    /**
+     * работа DatePicker во вью заявки
+     * */
+    $('#select-date-timetable-view').datepicker().on('change', function() {
+        let date = $(this).val();
+        changeAttribute('date', date, false, false)
+    });
+
+
     /**
      * работа DatePicker в сайдбаре
      * */
@@ -146,16 +162,12 @@ function initDatepicker() {
         setCashDate(date);
     });
     $('.change-date-column-o').datepicker().on('change', function() {
-        console.log('change', $(this));
         let value = $(this).val();
         let place_id = $(this).attr('data-place');
-        console.log('place_id', place_id)
-        console.log('value', value)
         $.get('timetable/set-place-date', {place_id: place_id, date: value}, function(data) {
             if(data.result) {
                 updateTable();
             }
-            console.log('data', data)
         });
 
     });
@@ -165,6 +177,49 @@ function initDatepicker() {
 function maskInit() {
     $(".phone-mask").inputmask({"mask": "+7 (999) 999-9999", "clearIncomplete": true});
     $(".select-time").inputmask({"mask": "99:99"});
+}
+
+/**
+ * меняет значение отдельного аттрибута в модальном окне view записи
+ * */
+function changeAttribute(attribute, value, jObj, jObjSpan) {
+    let timetable_id = $('#timetable-item').attr('data-id');
+    $.get('timetable/change-value', {timetable_id: timetable_id, attributeName: attribute, value: value}, function(json) {
+        if(json.result) {
+            //displaySuccessMessage(json.message)
+            if(jObj && jObjSpan && json.html) {
+                jObjSpan.text(json.html).css('display', 'inherit');
+                jObj.css('display', 'none')
+            }
+            displaySuccessMessage(json.message)
+            updateTable()
+        }
+        else {
+            displayErrorMessage(json.message)
+            $(this).val(json.html)
+        }
+    });
+}
+/**
+ * показывает модяльное окно просмотра
+ * */
+function showViewModal(timetable_id) {
+    //console.log('showViewModal', timetable_id)
+    $.ajax({
+        url: 'site/show-view',
+        type: 'GET',
+        data: {id: timetable_id},
+        success: function (res) {
+            $('#view-modal').html(res);
+            $('#timetable-item').modal('show');
+            initDatepicker();
+            maskInit();
+
+        },
+        error: function () {
+            console.log('Error!');
+        }
+    });
 }
 /**
  * показывает форму создания события
@@ -186,7 +241,32 @@ function showCreateModal(time, date, place) {
             fillTimeTo();
         },
         error: function () {
-            alert('Error!');
+            console.log('Error!');
+        }
+    });
+}
+/**
+ * показывает форму редактирования события
+ * */
+function showEditModal(id) {
+    let action = '/site/show-edit-modal'
+    $.ajax({
+        url: action,
+        type: 'GET',
+        data: {id: id},
+        success: function (data) {
+            if(data.result) {
+                $('#timetable-item').modal('hide');
+                $('#view-modal').html('');
+                $('#edit-modal').html(data.html);
+                $('#timetable-edit').modal('show');
+            }
+            initDatepickerForm();
+            maskInit();
+            fillTimeTo();
+        },
+        error: function () {
+            console.log('Error!');
         }
     });
 }
@@ -203,7 +283,7 @@ function setCashDate(date) {
             return false;
         },
         error: function () {
-            alert('Error!');
+            console.log('Error!');
         }
     });
 }
@@ -224,7 +304,10 @@ function setCashPlaces() {
         url: 'site/change-places',
         type: 'GET',
         data: {data: places},
-        success: function (res) {
+        success: function (json) {
+            if(json.result) {
+                $('#adresses').html(json.adresses);
+            }
             updateTable();
             //window.location.reload();
             return false;
@@ -243,7 +326,6 @@ function setCashPlaceDates(id, date) {
         type: 'GET',
         data: {id: id, date: date},
         success: function (data) {
-            console.log(data)
             updateTable();
             //window.location.reload();
             return false;
@@ -278,9 +360,44 @@ function fillTimeTo() {
             }
         },
         error: function () {
-            alert('Error!');
+            console.log('Error!');
         }
     });
+}
+
+function displaySuccessMessage(message) {
+    $('.info-message').text(message);
+    setTimeout(function() {
+        $('.info-message').text('');
+    }, 5000)
+}
+function displayErrorMessage(message) {
+    $('.info-message').addClass('error').text(message);
+    setTimeout(function() {
+        $('.info-message').text('');
+    }, 5000)
+}
+
+/*function updatePlaceAccordeon(place_id) {
+    $.ajax({
+        url: 'timetable/update-place-accordeon',
+        type: 'GET',
+        data: {place_id: place_id},
+        success: function (json) {
+            console.log('updatePlaceAccordeon', json)
+            if(json.result) {
+                $('.accordion-collapse-o[data-id="' + json.adress_id + '"]').html(json.html);
+                updateTable();
+            }
+
+        },
+        error: function () {
+            console.log('Error!');
+        }
+    });
+}*/
+function sortPlaceColumns() {
+    setCashPlaces()
 }
 
 
@@ -307,7 +424,7 @@ function updateTimeoutMain() {
         $.get('site/update-main', function(res) {
             if(res) {
                 updateTable();
-                console.log('update table')
+                //console.log('update table')
             }
             //console.log('request')
             updateTimeoutMain();
@@ -346,21 +463,66 @@ function initDragNDrop() {
             stop_time = dropObj.attr('data-time');
             stop_date = dropObj.attr('data-date');
             stop_place = dropObj.attr('data-place');
-
-            console.log('start_time', start_time);
-            console.log('start_timetable_id', start_timetable_id);
-            console.log('stop_time', stop_time);
-            console.log('stop_date', stop_date);
-            console.log('stop_place', stop_place);
-
             $.get('/timetable/drop-record', {start_timetable_id: start_timetable_id, start_time: start_time, stop_time: stop_time, stop_date: stop_date, stop_place: stop_place}, function(json) {
-                console.log(json)
                 if(json.result) {
                     updateTable();
                 }
             });
         }
     });
+}
+
+function initResizable() {
+    let id,
+        start_height,
+        stop_height,
+        resizeObj;
+    $('.column-item-o').resizable({
+        start: function(ev, ui) {
+            resizeObj = $(ev.target);
+            start_height = $(this).height();
+            resizeObj.css('z-index', 100);
+        },
+        resize: function(ev, ui) {
+            //console.log('resize ev', ev);
+            //console.log('resize ui', ui);
+        },
+        stop: function(ev, ui) {
+            resizeObj = $(ev.target);
+            id = resizeObj.attr('data-id');
+            stop_height = $(this).height();
+            //console.log('id', id);
+            //console.log('start_height', start_height);
+            //console.log('stop_height', stop_height);
+            $.get('/timetable/resize-record', {timetable_id: id, start_height: start_height, stop_height: stop_height}, function(json) {
+                if(json.result) {
+                    updateTable();
+                }
+                resizeObj.css('z-index', 10);
+            });
+
+        }
+    });
+}
+function initSortable() {
+    $('.accordion-body-o').sortable({
+        stop(ev, ui) {
+            sortPlaceColumns();
+            //console.log('sortable ev', ev);
+            //console.log('sortable ui', ui);
+        }
+    })
+}
+
+function updateLogs() {
+    if($('#logs').length) {
+        let timetable_id = $('#timetable-item').attr('data-id');
+        $.get('timetable/update-logs', {timetable_id: timetable_id}, function(data) {
+            if(data.result) {
+                $('#logs').html(data.html)
+            }
+        });
+    }
 }
 
 
@@ -378,15 +540,21 @@ function updateTable() {
             $('.column-o').remove();
             //$('.column-sidebar-o').after(res);
             $('.main-columns-o').html(res);
-            alignColumns();
+            //alignColumns();
             let date = new Date();
             let time_end = date.getTime();
-            console.log('duration ms ', (time_end - time_begin));
-            initDatepicker();
-            initDragNDrop();
+            //console.log('duration ms ', (time_end - time_begin));
+            initPlugins();
+            updateLogs();
         },
         error: function () {
             console.log('Error!');
         }
     });
+}
+function initPlugins() {
+    initDatepicker();
+    initDragNDrop();
+    initResizable();
+    initSortable();
 }

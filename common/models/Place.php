@@ -66,6 +66,11 @@ class Place extends BaseModel
         return array_merge(parent::attributeLabels(), $attributeLabels);
     }
 
+    public function getAdress()
+    {
+        return $this->hasOne(Street::className(), ['id' => 'street_id']);
+    }
+
     /**
      * @return array
      */
@@ -102,6 +107,8 @@ class Place extends BaseModel
                     'time_from' => $timetable->time_from,
                     'time_to' => $timetable->time_to,
                     'styles' => $timetable->getItemStyle(),
+                    'qty' => $timetable->qty,
+                    'serviceName' => $timetable->service ? $timetable->service->name : '',
                 ];
             }
         }

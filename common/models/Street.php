@@ -60,6 +60,17 @@ class Street extends BaseModel
      */
     public function getPlaces()
     {
+        if($cachePlaces = $this->getCachePlaces()) {
+            $resultFirst = [];
+            foreach($cachePlaces as $cachePlaceId) {
+                if($place = Place::find()->where(['id' => $cachePlaceId, 'street_id' => $this->id])->one()) {
+                    $resultFirst[] = $place;
+                }
+            }
+            //$resultFirst = Place::find()->where(['street_id' => $this->id])->andWhere(['in', 'id', $cachePlaces])->all();
+            $resultSecond = Place::find()->where(['street_id' => $this->id])->andWhere(['not in', 'id', $cachePlaces])->all();
+            return array_merge($resultFirst, $resultSecond);
+        }
         return $this->hasMany(Place::className(), ['street_id' => 'id']);
     }
 

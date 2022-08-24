@@ -8,6 +8,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
+use common\models\AuthAssignment;
 
 /**
  * User model
@@ -30,8 +31,11 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
 
+    const ADMIN_ID = 1;
+
     public $right_ids;
     public $_right_model;
+    public $role;
 
     public function __construct()
     {
@@ -62,10 +66,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username', 'password'], 'required'],
+            [['username', 'password', 'role'], 'required'],
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
-            [['right_ids'], 'safe'],
+            [['right_ids', 'role'], 'safe'],
             [['name', 'email'], 'string', 'max' => 255],
         ];
     }
@@ -81,6 +85,7 @@ class User extends ActiveRecord implements IdentityInterface
             'created_at' => 'Создан',
             'updated_at' => 'Изменен',
             'right_ids' => 'Права',
+            'role' => 'Права',
         ];
     }
 
@@ -88,21 +93,27 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->status = self::STATUS_ACTIVE;
         $this->password_hash = Yii::$app->security->generatePasswordHash($this->password);
-        UserRight::deleteAll(['user_id' => $this->id]);
-        if($this->right_ids) {
+        //UserRight::deleteAll(['user_id' => $this->id]);
+        /*if($this->right_ids) {
             foreach ($this->right_ids as $rightId) {
                 $userRight = new UserRight();
                 $userRight->user_id = $this->id;
                 $userRight->right_id = $rightId;
                 $userRight->save();
             }
-        }
+        }*/
         return parent::beforeSave($insert);
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        $this->setRole;
+        return parent::afterSave($insert, $changedAttributes);
     }
 
     public function afterFind()
     {
-        $this->right_ids = ArrayHelper::map(UserRight::find()->where(['user_id' => $this->id])->asArray()->all(), 'id', 'right_id');
+        //$this->right_ids = ArrayHelper::map(UserRight::find()->where(['user_id' => $this->id])->asArray()->all(), 'id', 'right_id');
         return parent::afterFind();
     }
 
@@ -285,8 +296,60 @@ class User extends ActiveRecord implements IdentityInterface
         return self::findOne(Yii::$app->user->id);
     }
 
+    public static function usersByRole($role)
+    {
+        $arr = [];
+        $users = self::find()->all();
+        foreach($users as $user) {
+            if(Yii::$app->authManager->getAssignment($role, $user->id)) $arr[] = $user;
+        }
+        return $arr;
+    }
+    public function getRolesArray()
+    {
+        return [
+            'admin' => 'admin',
+            'reception' => 'reception',
+            'instructor' => 'instructor',
+        ];
+    }
+    public function getUserRole()
+    {
+        if($roles = $this->rolesArray) {
+            foreach($roles as $role) {
+                if(Yii::$app->authManager->getAssignment($role, $this->id)) return $role;
+            }
+        }
+        return false;
+    }
+
+    public function getSetRole()
+    {
+        if($assigment = AuthAssignment::findOne(['user_id' => $this->id])) {
+            $assigment->item_name = $this->role;
+            if($assigment->save()) return true;
+        } else {
+            $userRole = Yii::$app->authManager->getRole($this->role);
+            Yii::$app->authManager->assign($userRole, $this->id);
+            return true;
+        }
+    }
+
     public function getRight($rightName)
     {
         return UserRight::find()->where(['user_id' => $this->id, 'right_id' => $rightName])->exists();
+    }
+    public static function isAdmin()
+    {
+        return Yii::$app->authManager->getAssignment('admin', Yii::$app->user->id);
+        //return Yii::$app->user->id == self::ADMIN_ID;
+    }
+    public static function isReception()
+    {
+        return Yii::$app->authManager->getAssignment('reception', Yii::$app->user->id);
+    }
+    public static function isInstructor()
+    {
+        return Yii::$app->authManager->getAssignment('instructor', Yii::$app->user->id);
     }
 }

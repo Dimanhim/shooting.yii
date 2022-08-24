@@ -35,10 +35,12 @@ class BaseModel extends ActiveRecord
         /** PLACES */
         $this->getCachePlaces();
 
+
         /** TEMP PLACES 0*/
-        $this->getCacheTempPlaces();
+        //$this->getCacheTempPlaces();
 
         $this->_user = User::findOne(Yii::$app->user->id);
+
     }
 
     /**
@@ -185,7 +187,7 @@ class BaseModel extends ActiveRecord
                 ];
             }
         }
-        if($tempPlaces = $config[$this->getCacheName('temp_places')]) {
+        /*if($tempPlaces = $config[$this->getCacheName('temp_places')]) {
             foreach($tempPlaces as $date => $value) {
                 if($value) {
                     foreach($value as $val) {
@@ -202,7 +204,7 @@ class BaseModel extends ActiveRecord
                     }
                 }
             }
-        }
+        }*/
 
         $html = '';
         $countItem = 0;
@@ -276,13 +278,14 @@ class BaseModel extends ActiveRecord
         }
         $places = $this->getCache($cacheNamePlaces);
         $this->_config[$cacheNamePlaces] = Helper::getArrayFromString($places);
+        return $this->_config[$cacheNamePlaces];
     }
 
     /**
     $array = [
      * ]
      */
-    public function setCacheTempPlaces($placesDatesArray) {
+    /*public function setCacheTempPlaces($placesDatesArray) {
         $cacheNamePlaces = $this->getCacheName('temp_places');
         $placesString = json_encode($placesDatesArray);
         $this->setCache($cacheNamePlaces, $placesString);
@@ -295,7 +298,7 @@ class BaseModel extends ActiveRecord
         }
         $places = $this->getCache($cacheNamePlaces);
         $this->_config[$cacheNamePlaces] = json_decode($places, true);
-    }
+    }*/
 
 
 

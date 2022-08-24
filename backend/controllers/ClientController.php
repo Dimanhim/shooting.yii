@@ -11,7 +11,7 @@ use yii\filters\VerbFilter;
 /**
  * ClientController implements the CRUD actions for Client model.
  */
-class ClientController extends Controller
+class ClientController extends BaseController
 {
     /**
      * @inheritDoc

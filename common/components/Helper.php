@@ -43,6 +43,9 @@ class Helper extends Model
     }
     public static function formatTimeFromHoursString($hours)
     {
+        if(preg_match('/:/', $hours)) {
+            return $hours;
+        }
         $time = str_pad($hours, 2, '0', STR_PAD_LEFT);
         $time = $time . ':00';
         return $time;
@@ -66,7 +69,7 @@ class Helper extends Model
     /**
      * @return array
      */
-    public static function getTimesArray()
+    public static function getTimesArrayOLD()
     {
         $hourBegin = 9;
         $countHours = 14;
@@ -77,6 +80,14 @@ class Helper extends Model
             $result[] = $hourBegin + $i;
         }
         return $result;
+    }
+    public static function getTimesArray()
+    {
+        return [
+            '9', '09:30', '10', '10:30', '11', '11:30', '12', '12:30', '13',
+            '13:30', '14', '14:30', '15', '15:30', '16', '16:30', '17', '17:30',
+            '18', '18:30', '18', '19:30', '20', '20:30', '21', '21:30', '22', '22:30',
+        ];
     }
 
     /**

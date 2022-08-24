@@ -49,47 +49,14 @@ use common\models\Street;
 -->
 
 <!-- ADRESSES -->
-<div class="panel-block">
-    <div class="accordion">
-        <?php if($adresses = Street::find()->all()) : ?>
-            <?php
-                foreach($adresses as $adress) :
-                    $classCollapse = $adress->isShowedPlaces() ? ['collapsed' => '', 'show' => 'show'] : ['collapsed' => 'collapsed', 'show' => '']
-            ?>
-
-                <div class="accordion-item accordion-item-o accordion-address-item-o">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button accordion-button-o <?= $classCollapse['collapsed'] ?>" type="button" data-bs-toggle="collapse" data-bs-target="#panel-action-adress-<?= $adress->id ?>" aria-expanded="true" aria-controls="panel-action-adress-<?= $adress->id ?>">
-                            <?= $adress->name ?>
-                        </button>
-                    </h2>
-                    <div id="panel-action-adress-<?= $adress->id ?>" class="accordion-collapse accordion-collapse-o collapse <?= $classCollapse['show'] ?>" aria-labelledby="panel-action-adress-<?= $adress->id ?>">
-                        <div class="accordion-body accordion-body-o">
-                            <?php if($places = $adress->places) : ?>
-                                <?php
-
-                                    foreach($places as $place) :
-                                        $checked = $place->isShowed('places', $place->id) ? 'checked' : '';
-
-                                ?>
-                                    <div class="form-check">
-                                        <input class="form-check-input form-check-input-o" type="checkbox" value="" id="adress-item-<?= $place->id ?>" data-id="<?= $place->id ?>" <?= $checked ?>>
-                                        <label class="form-check-label" for="adress-item-<?= $place->id ?>">
-                                            <?= $place->name ?>
-                                        </label>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    </div>
+<div id="adresses" class="panel-block">
+    <?= $this->render('adress/_adresses') ?>
 </div>
+
 
 <?php if($model->_user->getRight(\common\models\UserRight::RIGHT_2)) : ?>
 <!-- MY CALENDARS -->
+<!--
 <div class="panel-block">
     <div class="accordion">
         <div class="accordion-item">
@@ -117,9 +84,11 @@ use common\models\Street;
         </div>
     </div>
 </div>
+-->
 <?php endif; ?>
 
 <!-- OTHER CALENDARS -->
+<!--
 <div class="panel-block">
     <div class="accordion">
         <div class="accordion-item">
@@ -147,8 +116,10 @@ use common\models\Street;
         </div>
     </div>
 </div>
+-->
 
 <!-- USER CALENDARS -->
+<!--
 <div class="panel-block">
     <div class="accordion">
         <div class="accordion-item">
@@ -176,8 +147,10 @@ use common\models\Street;
         </div>
     </div>
 </div>
+-->
 
 <!-- GROUPS -->
+<!--
 <div class="panel-block">
     <div class="accordion">
         <div class="accordion-item">
@@ -194,4 +167,5 @@ use common\models\Street;
         </div>
     </div>
 </div>
+-->
 

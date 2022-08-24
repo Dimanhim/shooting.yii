@@ -11,7 +11,7 @@ use yii\filters\VerbFilter;
 /**
  * TimetableController implements the CRUD actions for Timetable model.
  */
-class TimetableController extends Controller
+class TimetableController extends BaseController
 {
     /**
      * @inheritDoc
