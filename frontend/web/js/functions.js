@@ -221,6 +221,24 @@ function showViewModal(timetable_id) {
         }
     });
 }
+function validateRepeat() {
+    displayErrorMessage('Введите повтор');
+    return false;
+}
+function checkValue(inputObj) {
+    if(inputObj.is(':checked')) {
+        inputObj.parents('label').addClass('active');
+    }
+    else {
+        inputObj.parents('label').removeClass('active');
+    }
+}
+function checkValueImp(inputObj) {
+    inputObj.parents('label').addClass('active');
+}
+function unCheckValueImp(inputObj) {
+    inputObj.parents('label').removeClass('active');
+}
 /**
  * показывает форму создания события
  * */
@@ -480,7 +498,7 @@ function initResizable() {
     $('.column-item-o').resizable({
         start: function(ev, ui) {
             resizeObj = $(ev.target);
-            start_height = $(this).height();
+            start_height = resizeObj.height();
             resizeObj.css('z-index', 100);
         },
         resize: function(ev, ui) {
@@ -490,10 +508,10 @@ function initResizable() {
         stop: function(ev, ui) {
             resizeObj = $(ev.target);
             id = resizeObj.attr('data-id');
-            stop_height = $(this).height();
+            stop_height = resizeObj.height();
             //console.log('id', id);
-            //console.log('start_height', start_height);
-            //console.log('stop_height', stop_height);
+            console.log('start_height', start_height);
+            console.log('stop_height', stop_height);
             $.get('/timetable/resize-record', {timetable_id: id, start_height: start_height, stop_height: stop_height}, function(json) {
                 if(json.result) {
                     updateTable();

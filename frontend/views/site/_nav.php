@@ -85,6 +85,10 @@ use common\components\Helper;
             <div class="header-item">
                 <?= Helper::getDateFormatHeader($date) ?>
             </div>
+            <div class="header-item">
+                <p class="info-message"></p>
+            </div>
+
 
 
             <!--

@@ -66,6 +66,20 @@ $modalClass = (User::isAdmin() || User::isReception()) ? 'timetable-editable-vie
                 <table class="table table-borderless">
                     <tr>
                         <td style="width: 20px" >
+                            <i class="bi bi-phone"></i>
+                        </td>
+                        <td>
+                            <?= $model->attributeLabels()['name'] ?>:
+                        </td>
+                        <td>
+                            <span class="editable-field-text editable-field-text-o">
+                                <?= $model->name ?>
+                            </span>
+                            <input type="text" placeholder="Имя" class="form-control editable-field-input editable-field-input-o" value="<?= $model->name ?>" data-attribute="name">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 20px" >
                             <i class="bi bi-calendar-date"></i>
                         </td>
                         <td>
@@ -159,6 +173,17 @@ $modalClass = (User::isAdmin() || User::isReception()) ? 'timetable-editable-vie
                             <textarea class="form-control editable-field-input editable-field-input-o" data-attribute="description"><?= $model->description ?></textarea>
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            <i class="bi bi-infinity"></i>
+                        </td>
+                        <td>
+                            Повтор
+                        </td>
+                        <td>
+                            <?= $model->getRepeatString() ?>
+                        </td>
+                    </tr>
                 </table>
             </div>
 
@@ -172,6 +197,7 @@ $modalClass = (User::isAdmin() || User::isReception()) ? 'timetable-editable-vie
                         ]) ?>
                     </div>
                 <?php endif; ?>
+                <a href="#" class="btn btn-danger btn-delete-record-o" data-id="">Удалить</a>
             </div>
         </div>
     </div>

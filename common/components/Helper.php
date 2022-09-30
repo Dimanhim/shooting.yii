@@ -90,6 +90,14 @@ class Helper extends Model
         ];
     }
 
+    public static function getTimesShortArray()
+    {
+        return [
+            '9', '10', '11', '12', '13', '14', '15',
+            '16', '17', '18', '19', '20', '21', '22',
+        ];
+    }
+
     /**
      * @return array
      */
@@ -97,6 +105,19 @@ class Helper extends Model
     {
         $result = [];
         foreach(self::getTimesArray() as $time) {
+            $formattedTime = self::formatTimeFromHoursString($time);
+            $result[self::getSecondsInTime($formattedTime)] = $formattedTime;
+        }
+        return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getTimesShortSecondsArray()
+    {
+        $result = [];
+        foreach(self::getTimesShortArray() as $time) {
             $formattedTime = self::formatTimeFromHoursString($time);
             $result[self::getSecondsInTime($formattedTime)] = $formattedTime;
         }
@@ -366,5 +387,15 @@ class Helper extends Model
             "9" => "9",
         ];
         return $letters[$letter];
+    }
+    public static function getWeekCount($timestamp)
+    {
+        return ((int) ((date("j")+date("w", strtotime(date("m") . "/01/" . date("Y")))-2)/7)) + 1;
+        $month = date('m', $timestamp);
+        /*$days_in_month = date('j', $timestamp);
+        $diff = 3600 * 24;
+        for($i = 0; $i < 7; $i++) {
+
+        }*/
     }
 }

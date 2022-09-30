@@ -16,6 +16,7 @@ class m220802_113405_logs extends Migration
         $this->createTable('{{%logs}}', [
             'id'                    => Schema::TYPE_PK,
             'is_new'                => Schema::TYPE_STRING,
+            'is_deleted'            => Schema::TYPE_STRING,
             'timetable_id'          => Schema::TYPE_INTEGER . ' NOT NULL',
             'attribute'             => Schema::TYPE_STRING  . ' NOT NULL',
             'operation_id'          => Schema::TYPE_STRING,

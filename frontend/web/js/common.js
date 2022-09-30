@@ -138,20 +138,26 @@ $(document).ready(function() {
     $('body').on('submit', '#form-create-timetable', function(e) {
         e.preventDefault();
         let form = $(this);
+        //if(!validateRepeat()) return false;
         let data = form.serialize();
         $.ajax({
             url: form.attr('action'),
             type: 'GET',
             data: data,
             success: function (json) {
-                let res = JSON.parse(json);
-                $('#timetable-create').modal('hide');
-                $('#timetable-result').modal('show');
-                $('.modal-body-result-o').text(res.message);
-                updateTable();
+                if(json.result) {
+                    $('#timetable-create').modal('hide');
+                    $('#timetable-result').modal('show');
+                    $('.modal-body-result-o').text(json.message);
+                    updateTable();
+                }
+                else if(json.message) {
+                    displayErrorMessage(json.message)
+                }
+
             },
             error: function () {
-                alert('Error!');
+                console.log('Error!');
             }
         });
     });
@@ -178,6 +184,16 @@ $(document).ready(function() {
             }
         });
     });
+    $('body').on('change', '#timetable-repeat_id', function(e) {
+        e.preventDefault();
+        let repeat_block = $('.repeat-group');
+        if($(this).is(':checked')) {
+            repeat_block.css('display', 'block');
+        }
+        else {
+            repeat_block.css('display', 'none');
+        }
+    });
     /**
      * смена просмотра записи в модали на редактирование
      * */
@@ -202,6 +218,90 @@ $(document).ready(function() {
         let value = $(this).val();
         let attribute = $(this).attr('data-attribute');
         changeAttribute(attribute, value, $(this), span)
+    });
+
+    /**
+     * Удаляет запись
+     * */
+    $('body').on('click', '.btn-delete-record-o', function(e) {
+        e.preventDefault();
+        if(!confirm('Вы действительно хотите удалить запись?')) return false;
+        let timetable_id = $('#timetable-item').attr('data-id');
+        $.get('timetable/delete-record', {timetable_id: timetable_id}, function(json) {
+            if(json.result) {
+                displaySuccessMessage(json.message)
+            }
+            if(json.result) {
+                displayErrorMessage(json.message)
+
+            }
+            $('#timetable-item').modal('hide');
+            updateTable()
+        })
+    });
+
+    /**
+     * Выделяет дни недели в модальном окне
+     * */
+    $('body').on('change', '.repeats-days-o input', function(e) {
+        e.preventDefault();
+        let value = $(this).val();
+        let self = $(this);
+        let type = self.attr('data-type');
+        if(value == 100) {
+            checkValue(self)
+            if(self.is(':checked')) {
+                $('.repeats-days-o input').each(function(index, element) {
+                    if($(element).val() != 100) {
+                        checkValueImp($(element));
+                    }
+                })
+            }
+            else {
+                $('.repeats-days-o input').each(function(index, element) {
+                    if($(element).val() != 100) {
+                        unCheckValueImp($(element));
+                    }
+                })
+            }
+        }
+        else {
+            if(type == 'radio') {
+                $('.repeats-days-o input').each(function(index, element) {
+                    let el = $(element);
+                    el.prop('checked', false);
+                    el.parents('label').removeClass('active');
+                });
+                self.prop('checked', true);
+            }
+            checkValue(self);
+        }
+    });
+
+    /**
+     * Выдвигает нужные поля дл язаполнения в повторах
+     * */
+    $('body').on('change', '.select-period-o', function(e) {
+        e.preventDefault();
+        $('.hidden-field').css('display', 'none');
+        let type_id = $(this).find('option:selected').attr('data-type-id');
+        let field = $('.hidden-field[data-type-id="' + type_id + '"]');
+        field.css('display', 'table-row')
+    });
+
+    /**
+     * Сворачивает или разворачивает логи
+     * */
+    $('body').on('click', '.show-logs-o', function(e) {
+        e.preventDefault();
+        if($('.logs-table-o').is(':visible')) {
+            $('.logs-table-o').css('display', 'none');
+            $(this).find('i.bi').removeClass('bi-chevron-up').addClass('bi-chevron-down');
+        }
+        else {
+            $('.logs-table-o').css('display', 'table');
+            $(this).find('i.bi').removeClass('bi-chevron-down').addClass('bi-chevron-up');
+        }
     });
 
 

@@ -30,7 +30,7 @@ $rows = BaseModel::COLUMN_ROWS;      // по две штуки в ряд
             <?php foreach(Helper::getTimesArray() as $time) : ?>
             <div class="column-line <?= preg_match('/30/', $time) ? 'time-half' : '' ?> <?php if(!User::isInstructor()) : ?>column-line-o<?php endif; ?>" data-time="<?= Helper::formatTimeFromHours($time) ?>" data-date="<?= $result['date'] ?>" data-place="<?= $result['id'] ?>">
                 <div class="row">
-                    <div class="col-sm-1 column-calendar-block">
+                    <div class="col-sm-1-5 column-calendar-block">
                         <div class="column-calendar-time ">
                             <span><?= $time ?></span>
                         </div>

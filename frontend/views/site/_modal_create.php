@@ -54,7 +54,15 @@ use common\models\Service;
                 <?= $form->field($model, 'qty', ['template' => '{input}'])->textInput(['placeholder' => "Количество человек", 'class' => 'form-control']) ?>
                 <?= $form->field($model, 'service_id', ['template' => '{input}'])->dropDownList(Service::getList(), ['prompt' => '[Услуга не выбрана]']) ?>
                 <?= $form->field($model, 'phone', ['template' => '{input}'])->textInput(['placeholder' => "Номер телефона", 'class' => 'form-control phone-mask']) ?>
+                <?= $this->render('_repeats', [
+                    'form' => $form,
+                    'model' => $model,
+                ]) ?>
                 <?= $form->field($model, 'description', ['template' => '{input}'])->textarea(['placeholder' => 'Текст описания']) ?>
+                <div class="form-group">
+                    <p class="info-message"></p>
+                </div>
+
                 <?= Html::submitButton('Добавить', ['class' => "btn btn-success"]) ?>
                 <?php ActiveForm::end() ?>
             </div>

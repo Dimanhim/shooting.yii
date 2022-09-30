@@ -63,6 +63,7 @@ body.body-gray {
   /*display: none;*/
   color: #28a745;
   height: 20px;
+  margin-bottom: 0;
 }
 .info-message.error {
   color: #dc3545;
@@ -197,13 +198,14 @@ body.body-gray {
 }
 .column-calendar-block:first-child {
   padding-left: calc(var(--bs-gutter-x) * .5);
+  background: #eee;
 }
 .column-calendar-block:last-child {
   padding-right: calc(var(--bs-gutter-x) * .5);
 }
 .column-calendar-time {
   font-style: italic;
-  padding-left: 10px;
+  padding-left: 5px;
   font-size: 12px;
 }
 .calendar-column-body-item {
@@ -291,8 +293,20 @@ div.required:after {
 .header-item-sign-up-mobile {
   display: none;
 }
+.infinity {
+  display: block;
+  position: absolute;
+  bottom: 0.2em;
+  right: 2em;
 
+}
+.repeat-group {
+  display: none;
+}
 .column-line.time-half .column-calendar-time span {
+  display: none;
+}
+.logs-table {
   display: none;
 }
 .logs-table td, .logs-table th {
@@ -377,3 +391,10 @@ END PRELOADER
     margin-top: -30px;
   }
 }
+@media (min-width: 576px) {
+  .col-sm-1-5 {
+    flex: 0 0 auto;
+    width: 11.11111111%;
+  }
+}
+

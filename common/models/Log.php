@@ -42,7 +42,7 @@ class Log extends \yii\db\ActiveRecord
     {
         return [
             [['timetable_id', 'attribute', 'change_to', 'user_id'], 'required'],
-            [['timetable_id', 'user_id', 'is_new'], 'integer'],
+            [['timetable_id', 'user_id', 'is_new', 'is_deleted'], 'integer'],
             [['attribute', 'change_from', 'change_to', 'operation_id'], 'string', 'max' => 255],
         ];
     }
@@ -56,6 +56,7 @@ class Log extends \yii\db\ActiveRecord
             'id' => 'ID',
             'operation_id' => 'Operation ID',
             'is_new' => 'Создание',
+            'is_deleted' => 'Удален',
             'timetable_id' => 'Timetable ID',
             'attribute' => 'Attribute',
             'change_from' => 'Change From',
@@ -82,11 +83,12 @@ class Log extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 
-    public static function setLog($timetable_id, $is_new, $attributeName, $changeFrom, $changeTo, $operation_id)
+    public static function setLog($timetable_id, $is_new, $attributeName, $changeFrom, $changeTo, $operation_id, $is_deleted = null)
     {
         $log = new self();
         $log->timetable_id = $timetable_id;
         $log->is_new = (integer) $is_new;
+        $log->is_deleted = (integer) $is_deleted;
         $log->attribute = (string) $attributeName;
         $log->change_from = $changeFrom ? (string) $changeFrom : '';
         $log->change_to = (string) $changeTo;
@@ -218,6 +220,13 @@ class Log extends \yii\db\ActiveRecord
                 ],
             ],
             [
+                'placeId' => 'attribute_default',
+                'place_name' => 'Изменено имя',
+                'attributes' => [
+                    'name',
+                ],
+            ],
+            [
                 'placeId' => 'attribute_date',
                 'place_name' => 'Изменена дата',
                 'attributes' => [
@@ -250,6 +259,13 @@ class Log extends \yii\db\ActiveRecord
                 'place_name' => 'Изменено описание',
                 'attributes' => [
                     'description',
+                ],
+            ],
+            [
+                'placeId' => 'attribute_qty',
+                'place_name' => 'Изменено кол-во человек',
+                'attributes' => [
+                    'qty',
                 ],
             ],
             [

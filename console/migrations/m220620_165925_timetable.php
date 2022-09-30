@@ -29,8 +29,13 @@ class m220620_165925_timetable extends Migration
             'user_id'               => Schema::TYPE_INTEGER,
             'color_id'              => Schema::TYPE_INTEGER,
             'trainer_id'            => Schema::TYPE_INTEGER,
+            'repeat_id'             => Schema::TYPE_INTEGER,
             'service_id'            => Schema::TYPE_INTEGER,
+            'service_name'          => Schema::TYPE_STRING,
             'qty'                   => Schema::TYPE_STRING,
+            'repeat_day_begin'      => Schema::TYPE_INTEGER,
+            'repeat_type'           => Schema::TYPE_INTEGER,
+            'repeat_type_values'    => Schema::TYPE_STRING,
 
             'is_active'             => Schema::TYPE_SMALLINT,
             'deleted'               => Schema::TYPE_SMALLINT,

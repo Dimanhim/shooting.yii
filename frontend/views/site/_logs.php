@@ -1,6 +1,6 @@
-<h4>Логи</h4>
+<h4 class="not-styles-link">Логи <a href="#" class="show-logs-o"><i class="bi bi-chevron-down"></i></a></h4>
 <?php if(!empty($logs)) : ?>
-    <table class="table logs-table">
+    <table class="table logs-table logs-table-o">
         <tr>
             <th>
                 Дата/время

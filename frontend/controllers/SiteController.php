@@ -360,7 +360,7 @@ class SiteController extends Controller
             'html' => null,
         ];
         $result = [];
-        if($times = Helper::getTimesSecondsArray()) {
+        if($times = Helper::getTimesShortSecondsArray()) {
             foreach($times as $key => $val) {
                 if($key > $time) {
                     $result[$key] = $val;
