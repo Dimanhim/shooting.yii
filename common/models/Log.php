@@ -255,6 +255,13 @@ class Log extends \yii\db\ActiveRecord
                 ],
             ],
             [
+                'placeId' => 'attribute_service_name',
+                'place_name' => 'Изменена услуга',
+                'attributes' => [
+                    'service_name',
+                ],
+            ],
+            [
                 'placeId' => 'attribute_default',
                 'place_name' => 'Изменено описание',
                 'attributes' => [

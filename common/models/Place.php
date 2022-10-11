@@ -108,7 +108,8 @@ class Place extends BaseModel
                     'time_to' => $timetable->time_to,
                     'styles' => $timetable->getItemStyle(),
                     'qty' => $timetable->qty,
-                    'serviceName' => $timetable->service ? $timetable->service->name : '',
+                    //'serviceName' => $timetable->service ? $timetable->service->name : '',
+                    'serviceName' => $timetable->service_name,
                     'infinity' => $timetable->repeat_id,
                 ];
             }

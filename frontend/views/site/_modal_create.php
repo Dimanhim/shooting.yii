@@ -52,7 +52,8 @@ use common\models\Service;
                     </div>
                 </div>
                 <?= $form->field($model, 'qty', ['template' => '{input}'])->textInput(['placeholder' => "Количество человек", 'class' => 'form-control']) ?>
-                <?= $form->field($model, 'service_id', ['template' => '{input}'])->dropDownList(Service::getList(), ['prompt' => '[Услуга не выбрана]']) ?>
+                <?//= $form->field($model, 'service_id', ['template' => '{input}'])->dropDownList(Service::getList(), ['prompt' => '[Услуга не выбрана]']) ?>
+                <?= $form->field($model, 'service_name', ['template' => '{input}'])->textInput(['placeholder' => 'Введите услугу']) ?>
                 <?= $form->field($model, 'phone', ['template' => '{input}'])->textInput(['placeholder' => "Номер телефона", 'class' => 'form-control phone-mask']) ?>
                 <?= $this->render('_repeats', [
                     'form' => $form,

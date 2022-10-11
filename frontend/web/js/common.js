@@ -140,6 +140,7 @@ $(document).ready(function() {
         let form = $(this);
         //if(!validateRepeat()) return false;
         let data = form.serialize();
+        addPreloader();
         $.ajax({
             url: form.attr('action'),
             type: 'GET',
@@ -154,9 +155,11 @@ $(document).ready(function() {
                 else if(json.message) {
                     displayErrorMessage(json.message)
                 }
-
+                removePreloader();
             },
             error: function () {
+                removePreloader();
+                displayErrorMessage('Произошла ошибка, попробуйте позднее')
                 console.log('Error!');
             }
         });
@@ -238,6 +241,51 @@ $(document).ready(function() {
             $('#timetable-item').modal('hide');
             updateTable()
         })
+    });
+
+    /**
+     * Удаляет все записи повторов
+     * */
+    $('body').on('click', '.btn-delete-infinity-o', function(e) {
+        e.preventDefault();
+        if(!confirm('Вы действительно хотите удалить все повторы?')) return false;
+        let timetable_id = $('#timetable-item').attr('data-id');
+        $.get('timetable/delete-infinity', {timetable_id: timetable_id}, function(json) {
+            if(json.result) {
+                displaySuccessMessage(json.message)
+            }
+            if(json.result) {
+                displayErrorMessage(json.message)
+
+            }
+            $('#timetable-item').modal('hide');
+            updateTable()
+        })
+    });
+
+    $('body').on('submit', '#form-repeat', function(e) {
+        e.preventDefault();
+        let form = $(this);
+        let data = form.serialize();
+        addPreloader();
+        $.ajax({
+            url: form.attr('action'),
+            type: 'GET',
+            data: data,
+            success: function (json) {
+                if(json.result) {
+                    displaySuccessMessage(json.message)
+                }
+                if(json.result) {
+                    displayErrorMessage(json.message)
+                }
+                removePreloader();
+            },
+            error: function () {
+                console.log('Error!');
+            }
+        });
+
     });
 
     /**

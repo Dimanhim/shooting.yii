@@ -339,12 +339,15 @@ class Timetable extends BaseModel
     }
     public function setRepeats()
     {
+        //if(!$this->repeat_id) return false;
         //file_put_contents('info-log.txt', 'model - '.print_r($this, true)."\n", FILE_APPEND);
         $repeat_data = $this->getRepeatData();
         $date_begin = strtotime($this->repeat_day_begin);
         $date_end = mktime(0, 0, 0, 12, 31, date('Y'));
+        $repeat_id = mt_rand(100000,1000000);
         foreach($repeat_data as $type => $typeValues) {
             if($this->repeat_type == $type) {
+                $this->repeat_id = $repeat_id;
                 switch ($type) {
                     case self::REPEAT_EVERY_DAY : {
                         $diff = 3600 * 24;
@@ -357,11 +360,13 @@ class Timetable extends BaseModel
                                     continue;
                                 }
                             }
-                            $timetable = new Timetable();
-                            $timetable->attributes = $this->attributes;
-                            $timetable->date = $date_begin;
-                            if(!$timetable->save()) {
-                                file_put_contents('info-log.txt', print_r($timetable->errors, true)."\n", FILE_APPEND);
+                            if($this->date != $date_begin) {
+                                $timetable = new Timetable();
+                                $timetable->attributes = $this->attributes;
+                                $timetable->date = $date_begin;
+                                if(!$timetable->save()) {
+                                    file_put_contents('info-log.txt', print_r($timetable->errors, true)."\n", FILE_APPEND);
+                                }
                             }
                         }
                     }
@@ -377,12 +382,13 @@ class Timetable extends BaseModel
                                 $repeat_type = (integer) $repeat_type;
 
                                 if(!($count % $repeat_type)) {
-
-                                    $timetable = new Timetable();
-                                    $timetable->attributes = $this->attributes;
-                                    $timetable->date = $date_begin;
-                                    if(!$timetable->save()) {
-                                        file_put_contents('info-log.txt', 'errors - '.print_r($timetable->errors, true)."\n", FILE_APPEND);
+                                    if($this->date != $date_begin) {
+                                        $timetable = new Timetable();
+                                        $timetable->attributes = $this->attributes;
+                                        $timetable->date = $date_begin;
+                                        if(!$timetable->save()) {
+                                            file_put_contents('info-log.txt', 'errors - '.print_r($timetable->errors, true)."\n", FILE_APPEND);
+                                        }
                                     }
                                 }
                             }
@@ -400,11 +406,13 @@ class Timetable extends BaseModel
 
                             $monthNumber = date('n', $date_begin);
                             if(in_array($monthNumber, $this->repeat_type_values)) {
-                                $timetable = new Timetable();
-                                $timetable->attributes = $this->attributes;
-                                $timetable->date = $date_begin;
-                                if(!$timetable->save()) {
-                                    file_put_contents('info-log.txt', 'errors - '.print_r($timetable->errors, true)."\n", FILE_APPEND);
+                                if($this->date != $date_begin) {
+                                    $timetable = new Timetable();
+                                    $timetable->attributes = $this->attributes;
+                                    $timetable->date = $date_begin;
+                                    if(!$timetable->save()) {
+                                        file_put_contents('info-log.txt', 'errors - '.print_r($timetable->errors, true)."\n", FILE_APPEND);
+                                    }
                                 }
                             }
                         }

@@ -160,7 +160,7 @@ class TimetableController extends Controller
     AJAX
     */
 
-    public function actionCreateRecord()
+    public function actionCreateRecord($id = null)
     {
         $responce = [
             'result' => false,
@@ -178,10 +178,13 @@ class TimetableController extends Controller
                         return $responce;
                     }
                     if(!$model->repeat_type) {
+                        $responce['message'] = 'Необходимо заполнить тип повтора';
+                        return $responce;
+                    }
+                    if(!$model->repeat_type_values) {
                         $responce['message'] = 'Необходимо заполнить периодичность повтора';
                         return $responce;
                     }
-                    $model->repeat_id = mt_rand(100000,1000000);
 
                     $model->setRepeats();
                 }
@@ -194,6 +197,52 @@ class TimetableController extends Controller
                     $responce['message'] = 'Не сохранено';
                 }
             }
+        }
+        return $responce;
+    }
+
+    public function actionCreateRepeat()
+    {
+        $responce = [
+            'result' => false,
+            'message' => 'Произошла ошибка добавления повтора',
+        ];
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        if(Yii::$app->request->isAjax) {
+            if($id = Yii::$app->request->get()['Timetable']['id']) {
+                $model = $this->findModel($id);
+                if($model->load(Yii::$app->request->get())) {
+                    file_put_contents('info-log.txt', 'attributes - '.print_r($model->attributes, true)."\n", FILE_APPEND);
+                    $model->date = $model->date ? strtotime($model->date) : null;
+                    $model->phone = $model->phone ? Helper::phoneFormat($model->phone) : null;
+                    if($model->repeat_id) {
+                        if(!$model->repeat_day_begin) {
+                            $responce['message'] = 'Необходимо заполнить дату начала повтора';
+                            return $responce;
+                        }
+                        if(!$model->repeat_type) {
+                            $responce['message'] = 'Необходимо заполнить тип повтора';
+                            return $responce;
+                        }
+                        if(!$model->repeat_type_values) {
+                            $responce['message'] = 'Необходимо заполнить периодичность повтора';
+                            return $responce;
+                        }
+                        //$model->repeat_id = mt_rand(100000,1000000);
+
+                        $model->setRepeats();
+                    }
+                    if($model->update(false)) {
+                        $responce['result'] = true;
+                        $responce['message'] = 'Запись успешно добавлена';
+                    }
+                    else {
+                        $responce['result'] = false;
+                        $responce['message'] = 'Не сохранено';
+                    }
+                }
+            }
+
         }
         return $responce;
     }
@@ -232,8 +281,6 @@ class TimetableController extends Controller
      */
     public function actionDropRecord($start_timetable_id, $start_time, $stop_time, $stop_date, $stop_place)
     {
-        //file_put_contents('info-log.txt', '$start_time - '.print_r($start_time, true)."\n", FILE_APPEND);
-        //file_put_contents('info-log.txt', '$stop_time - '.print_r($stop_time, true)."\n", FILE_APPEND);
         $responce = ['result' => false];
         Yii::$app->response->format = Response::FORMAT_JSON;
         if(Yii::$app->request->isAjax) {
@@ -262,20 +309,18 @@ class TimetableController extends Controller
                 if($timetable = Timetable::findOne($timetable_id)) {
 
                     $diff = $stop_height - $start_height;
-                    file_put_contents('info-log.txt', '$start_height - '.print_r($start_height, true)."\n", FILE_APPEND);
-                    file_put_contents('info-log.txt', '$stop_height - '.print_r($stop_height, true)."\n", FILE_APPEND);
-                    file_put_contents('info-log.txt', '$diff - '.print_r($diff, true)."\n", FILE_APPEND);
+
                     //if($diff > 0) {
                         $beginCount = ceil($start_height / Timetable::BASE_ROW_hEIGHT);
                         $diffDrag = ceil($diff / Timetable::BASE_ROW_hEIGHT);
                         $timetable->time_to = $timetable->time_from + $beginCount * Timetable::DIFF_COUNT_SECONDS + $diffDrag * Timetable::DIFF_COUNT_SECONDS;
 
-                        file_put_contents('info-log.txt', 'time_to - '.print_r($timetable->time_to, true)."\n", FILE_APPEND);
+
                         if($timetable->save()) {
                             $responce['result'] = true;
                         }
                     //}
-                    file_put_contents('info-log.txt', '$diff 2 - '.print_r($diffDrag, true)."\n", FILE_APPEND);
+
 
                 }
             }
@@ -408,6 +453,22 @@ class TimetableController extends Controller
                 //Log::deleteAll(['timetable_id' => $timetable_id]);
                 $responce['result'] = true;
                 $responce['message'] = 'Запись успешно удалена';
+            }
+        }
+        return $responce;
+    }
+
+    public function actionDeleteInfinity($timetable_id)
+    {
+        $responce = [
+            'result' => false,
+            'message' => '',
+        ];
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        if(($record = Timetable::findOne($timetable_id)) && ($record->repeat_id)) {
+            if(Timetable::deleteAll(['repeat_id' => $record->repeat_id])) {
+                $responce['result'] = true;
+                $responce['message'] = 'Записи успешно удалены';
             }
         }
         return $responce;

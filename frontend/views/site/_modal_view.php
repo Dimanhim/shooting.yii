@@ -140,9 +140,9 @@ $modalClass = (User::isAdmin() || User::isReception()) ? 'timetable-editable-vie
                         </td>
                         <td>
                             <span class="editable-field-text editable-field-text-o">
-                                <?= $model->service ? $model->service->name : '' ?>
+                                <?= $model->service_name ?>
                             </span>
-                            <?= Html::dropDownList($model->attributeLabels()['service_id'], $model->service_id, Service::getList(), ['prompt' => '[Не выбрано]', 'class' => 'form-control editable-field-input editable-field-input-o', 'data-attribute' => 'service_id']) ?>
+                            <input type="text" placeholder="Услуга" class="form-control editable-field-input editable-field-input-o" value="<?= $model->service_name ?>" data-attribute="service_name">
                         </td>
                     </tr>
                     <tr>
@@ -184,8 +184,27 @@ $modalClass = (User::isAdmin() || User::isReception()) ? 'timetable-editable-vie
                             <?= $model->getRepeatString() ?>
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+
+                        </td>
+                        <td colspan="2">
+
+
+
+                            <?php $formRepeat = ActiveForm::begin(['id' => 'form-repeat', 'action' => 'timetable/create-repeat']) ?>
+                                <?= $this->render('_repeats', [
+                                    'form' => $formRepeat,
+                                    'model' => $model,
+                                ]) ?>
+                            <?= $formRepeat->field($model, 'id', ['template' => '{input}'])->hiddenInput() ?>
+                            <?= Html::submitButton('Сохранить повтор', ['class' => "btn btn-success"]) ?>
+                            <?php ActiveForm::end() ?>
+                        </td>
+                    </tr>
                 </table>
             </div>
+
 
 
             <div class="modal-footer">
@@ -198,6 +217,9 @@ $modalClass = (User::isAdmin() || User::isReception()) ? 'timetable-editable-vie
                     </div>
                 <?php endif; ?>
                 <a href="#" class="btn btn-danger btn-delete-record-o" data-id="">Удалить</a>
+                <?php if($model->repeat_id) : ?>
+                    <a href="#" class="btn btn-danger btn-delete-infinity-o" data-id="">Удалить все повторы</a>
+                <?php endif; ?>
             </div>
         </div>
     </div>

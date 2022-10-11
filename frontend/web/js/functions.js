@@ -213,6 +213,7 @@ function showViewModal(timetable_id) {
             $('#view-modal').html(res);
             $('#timetable-item').modal('show');
             initDatepicker();
+            initDatepickerForm();
             maskInit();
 
         },
