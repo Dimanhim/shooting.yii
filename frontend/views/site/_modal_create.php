@@ -58,6 +58,7 @@ use common\models\Service;
                 <?= $this->render('_repeats', [
                     'form' => $form,
                     'model' => $model,
+                    'date' => $date,
                 ]) ?>
                 <?= $form->field($model, 'description', ['template' => '{input}'])->textarea(['placeholder' => 'Текст описания']) ?>
                 <div class="form-group">

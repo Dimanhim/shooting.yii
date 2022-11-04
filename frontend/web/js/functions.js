@@ -440,12 +440,15 @@ function removePreloader() {
  * */
 function updateTimeoutMain() {
     setTimeout(function() {
-        $.get('site/update-main', function(res) {
-            if(res) {
-                updateTable();
-                //console.log('update table')
+        $.get('site/update-main', function(json) {
+            if(json.result) {
+                if(json.logout) {
+                    window.location = '/site/logout';
+                }
+                if(json.update_table) {
+                    updateTable();
+                }
             }
-            //console.log('request')
             updateTimeoutMain();
         })
     }, 5000)
@@ -501,6 +504,7 @@ function initResizable() {
             resizeObj = $(ev.target);
             start_height = resizeObj.height();
             resizeObj.css('z-index', 100);
+            resizeObj.addClass('resizeble-obj')
         },
         resize: function(ev, ui) {
             //console.log('resize ev', ev);
@@ -511,13 +515,14 @@ function initResizable() {
             id = resizeObj.attr('data-id');
             stop_height = resizeObj.height();
             //console.log('id', id);
-            console.log('start_height', start_height);
-            console.log('stop_height', stop_height);
+            //console.log('start_height', start_height);
+            //console.log('stop_height', stop_height);
             $.get('/timetable/resize-record', {timetable_id: id, start_height: start_height, stop_height: stop_height}, function(json) {
                 if(json.result) {
                     updateTable();
                 }
                 resizeObj.css('z-index', 10);
+                resizeObj.removeClass('resizeble-obj')
             });
 
         }

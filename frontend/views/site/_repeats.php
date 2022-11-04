@@ -1,4 +1,4 @@
-<?= $form->field($model, 'repeat_id')->checkbox() ?>
+<?= $form->field($model, 'repeat_check')->checkbox() ?>
 <div class="form-group repeat-group">
     <div class="row">
         <div class="col-md-12">
@@ -14,7 +14,7 @@
                                     Начало
                                 </td>
                                 <td>
-                                    <?= $form->field($model, 'repeat_day_begin', ['template' => '{input}'])->textInput(['class' => 'form-control select-date-form']) ?>
+                                    <?= $form->field($model, 'repeat_day_begin', ['template' => '{input}'])->textInput(['class' => 'form-control select-date-form', 'value' => $date]) ?>
                                 </td>
                                 <td>
                                     <i class="bi bi-calendar"></i>

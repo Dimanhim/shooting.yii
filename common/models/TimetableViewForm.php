@@ -12,7 +12,7 @@ class TimetableViewForm extends Model
     public function rules()
     {
         return [
-            [['invite_persons', 'color_id'], 'safe'],
+            [['invite_persons', 'color_id', 'time_from'], 'safe'],
         ];
     }
 

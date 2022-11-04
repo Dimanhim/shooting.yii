@@ -52,7 +52,8 @@ $(document).ready(function() {
         e.preventDefault();
         e.stopPropagation();
         let timetable_id = $(this).attr('data-id');
-        showViewModal(timetable_id);
+        if(!$(this).hasClass('resizeble-obj'))
+            showViewModal(timetable_id);
     });
 
     /**
@@ -187,7 +188,7 @@ $(document).ready(function() {
             }
         });
     });
-    $('body').on('change', '#timetable-repeat_id', function(e) {
+    $('body').on('change', '#timetable-repeat_check', function(e) {
         e.preventDefault();
         let repeat_block = $('.repeat-group');
         if($(this).is(':checked')) {
@@ -265,6 +266,9 @@ $(document).ready(function() {
 
     $('body').on('submit', '#form-repeat', function(e) {
         e.preventDefault();
+        if($('#timetable-repeat_check').is(':checked')) {
+            if(!confirm('Подтвердите действие. Существующие записи цикла будут перезаписаны, данные могут быть утеряны')) return false;
+        }
         let form = $(this);
         let data = form.serialize();
         addPreloader();
@@ -286,6 +290,14 @@ $(document).ready(function() {
             }
         });
 
+    });
+
+    /**
+     * Закрыть окно просмотра записи - типо обманка
+     * */
+    $('body').on('click', '.btn-close-o', function(e) {
+        e.preventDefault();
+        $('#timetable-item').modal('hide')
     });
 
     /**

@@ -8,6 +8,7 @@ use common\components\Helper;
 use common\models\BaseModel;
 use common\models\TimetableForm;
 use common\models\Timetable;
+use common\models\UserCook;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use phpDocumentor\Reflection\Types\Expression;
@@ -85,6 +86,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        /*return $this->render('test');*/
         $model = new BaseModel();
         $user = User::getUser();
         return $this->render('index', [
@@ -487,9 +489,26 @@ class SiteController extends Controller
      */
     public function actionUpdateMain()
     {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = [
+            'result' => false,
+            'logout' => false,
+            'update_table' => false,
+        ];
         $timeBegin = time() - 10;
         $timeEnd = time();
-        return Timetable::find()->select(['created_at'])->where(['between', 'created_at', $timeBegin, $timeEnd])->exists();
+        if(Timetable::find()->select(['updated_at'])->where(['between', 'updated_at', $timeBegin, $timeEnd])->exists()) {
+            file_put_contents('update-main.txt', date('d.m.Y H:i:s', $timeEnd).', user - '.Yii::$app->user->id.', '."\n", FILE_APPEND);
+            $response['result'] = true;
+            $response['update_table'] = true;
+        }
+        $userCook = new UserCook();
+        if(!$userCook->isValue()) {
+            file_put_contents('logout.txt', date('d.m.Y H:i:s', $timeEnd).', user - '.Yii::$app->user->id.', '."\n", FILE_APPEND);
+            $response['result'] = true;
+            $response['logout'] = true;
+        }
+        return $response;
     }
 
     /**

@@ -172,7 +172,7 @@ class TimetableController extends Controller
             if($model->load(Yii::$app->request->get())) {
                 $model->date = strtotime($model->date);
                 $model->phone = Helper::phoneFormat($model->phone);
-                if($model->repeat_id) {
+                if($model->repeat_check) {
                     if(!$model->repeat_day_begin) {
                         $responce['message'] = 'Необходимо заполнить дату начала повтора';
                         return $responce;
@@ -188,14 +188,17 @@ class TimetableController extends Controller
 
                     $model->setRepeats();
                 }
-                if($model->save()) {
-                    $responce['result'] = true;
-                    $responce['message'] = 'Запись успешно добавлена';
-                }
                 else {
-                    $responce['result'] = false;
-                    $responce['message'] = 'Не сохранено';
+                    if($model->save()) {
+                        $responce['result'] = true;
+                        $responce['message'] = 'Запись успешно добавлена';
+                    }
+                    else {
+                        $responce['result'] = false;
+                        $responce['message'] = 'Не сохранено';
+                    }
                 }
+
             }
         }
         return $responce;
@@ -212,10 +215,14 @@ class TimetableController extends Controller
             if($id = Yii::$app->request->get()['Timetable']['id']) {
                 $model = $this->findModel($id);
                 if($model->load(Yii::$app->request->get())) {
-                    file_put_contents('info-log.txt', 'attributes - '.print_r($model->attributes, true)."\n", FILE_APPEND);
                     $model->date = $model->date ? strtotime($model->date) : null;
                     $model->phone = $model->phone ? Helper::phoneFormat($model->phone) : null;
-                    if($model->repeat_id) {
+                    if($model->repeat_check && $model->repeat_id) {
+                        if($deletedModels = Timetable::find()->where(['repeat_id' => $model->repeat_id])->andWhere(['<>', 'id', $model->id])->all()) {
+                            foreach($deletedModels as $deletedModel) {
+                                $deletedModel->delete();
+                            }
+                        }
                         if(!$model->repeat_day_begin) {
                             $responce['message'] = 'Необходимо заполнить дату начала повтора';
                             return $responce;
@@ -228,7 +235,6 @@ class TimetableController extends Controller
                             $responce['message'] = 'Необходимо заполнить периодичность повтора';
                             return $responce;
                         }
-                        //$model->repeat_id = mt_rand(100000,1000000);
 
                         $model->setRepeats();
                     }

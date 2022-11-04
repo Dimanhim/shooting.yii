@@ -71,6 +71,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
             [['right_ids', 'role'], 'safe'],
             [['name', 'email'], 'string', 'max' => 255],
+            [['user_cook_id'], 'integer'],
         ];
     }
 

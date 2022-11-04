@@ -298,7 +298,17 @@ div.required:after {
   position: absolute;
   bottom: 0.2em;
   right: 2em;
-
+}
+.text-description {
+  display: block;
+  position: absolute;
+  top: 0.2em;
+  right: 2em;
+}
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
+  border: 1px solid #c5c5c5;
+  background: #f6f6f6;
+  color: inherit;
 }
 .repeat-group {
   display: none;

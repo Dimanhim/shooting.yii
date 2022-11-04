@@ -4,6 +4,7 @@ namespace common\models;
 
 use Yii;
 use yii\base\Model;
+use yii\web\Cookie;
 
 /**
  * Login form
@@ -65,11 +66,22 @@ class LoginForm extends Model
      */
     public function login()
     {
+
         if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+            if(Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0)) {
+                $this->setUserCook();
+                return true;
+            }
+            return false;
         }
 
         return false;
+    }
+
+    public function setUserCook()
+    {
+        $userCook = new UserCook();
+        $userCook->setValue();
     }
 
     /**

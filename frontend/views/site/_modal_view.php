@@ -216,7 +216,9 @@ $modalClass = (User::isAdmin() || User::isReception()) ? 'timetable-editable-vie
                         ]) ?>
                     </div>
                 <?php endif; ?>
-                <a href="#" class="btn btn-danger btn-delete-record-o" data-id="">Удалить</a>
+                <a href="#" class="btn btn-success btn-close-o" data-id="">Сохранить</a>
+                <a href="#" class="btn btn-danger btn-delete-record-o pull-right" data-id="">Удалить</a>
+
                 <?php if($model->repeat_id) : ?>
                     <a href="#" class="btn btn-danger btn-delete-infinity-o" data-id="">Удалить все повторы</a>
                 <?php endif; ?>

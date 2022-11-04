@@ -35,6 +35,7 @@ class Timetable extends BaseModel
     const REPEAT_EVERY_MONTH = 3;
 
     private $_new_record = false;
+    public $repeat_check;
 
     //public $repeat_day_begin;               // дата начала
     //public $repeat_type;                    // ежедневно, еженедельно и т.д.
@@ -108,7 +109,7 @@ class Timetable extends BaseModel
     {
         return [
             [['description', 'short_description'], 'string'],
-            [['client_id', 'date', 'time_from', 'time_to', 'place_id', 'user_id', 'color_id', 'trainer_id', 'service_id', 'repeat_id'], 'integer'],
+            [['client_id', 'date', 'time_from', 'time_to', 'place_id', 'user_id', 'color_id', 'trainer_id', 'service_id', 'repeat_id', 'repeat_check'], 'integer'],
             [['name', 'phone', 'qty', 'service_name'], 'string', 'max' => 255],
             [['repeat_day_begin', 'repeat_type', 'repeat_type_values'], 'safe'],
         ];
@@ -138,6 +139,7 @@ class Timetable extends BaseModel
             'color_id' => 'Цвет',
 
             'repeat_id' => 'Зациклить',
+            'repeat_check' => 'Зациклить',
             'repeat_day_begin' => 'Начало',
             'repeat_type' => 'Повтор',
             'repeat_type_values' => '',
@@ -375,23 +377,20 @@ class Timetable extends BaseModel
                         $diff = 3600 * 24 * 7;
                         $count = 1;
                         while ($date_begin < $date_end) {
-                            $date_begin = $date_begin + $diff;
-
                             if($this->repeat_type_values) {
                                 $repeat_type = implode(',', $this->repeat_type_values);
                                 $repeat_type = (integer) $repeat_type;
 
                                 if(!($count % $repeat_type)) {
-                                    if($this->date != $date_begin) {
-                                        $timetable = new Timetable();
-                                        $timetable->attributes = $this->attributes;
-                                        $timetable->date = $date_begin;
-                                        if(!$timetable->save()) {
-                                            file_put_contents('info-log.txt', 'errors - '.print_r($timetable->errors, true)."\n", FILE_APPEND);
-                                        }
+                                    $timetable = new Timetable();
+                                    $timetable->attributes = $this->attributes;
+                                    $timetable->date = $date_begin;
+                                    if(!$timetable->save()) {
+                                        file_put_contents('info-log.txt', 'errors - '.print_r($timetable->errors, true)."\n", FILE_APPEND);
                                     }
                                 }
                             }
+                            $date_begin = $date_begin + $diff;
                             $count++;
                         }
                     }
@@ -422,5 +421,7 @@ class Timetable extends BaseModel
             }
         }
     }
+
+
 
 }
