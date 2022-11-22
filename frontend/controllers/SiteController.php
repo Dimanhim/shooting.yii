@@ -26,6 +26,7 @@ use frontend\models\ContactForm;
 use common\models\User;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use common\models\Place;
 
 /**
  * Site controller
@@ -86,6 +87,14 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        /*return $this->render('test', [
+
+        ]);*/
+
+        /*$place = new Place();
+
+        $records = $place->getRecordsArray();
+        return $this->render('example', ['records' => $records]);*/
         /*return $this->render('test');*/
         $model = new BaseModel();
         $user = User::getUser();
@@ -362,14 +371,14 @@ class SiteController extends Controller
             'html' => null,
         ];
         $result = [];
-        if($times = Helper::getTimesShortSecondsArray()) {
+        if($times = Helper::getTimesSecondsArray()) {
             foreach($times as $key => $val) {
                 if($key > $time) {
                     $result[$key] = $val;
                 }
             }
             $responce['result'] = true;
-            $responce['html'] = Helper::getTimesOptions($result);
+            $responce['html'] = Helper::getTimesOptions($result, $time);
         }
         return json_encode($responce);
     }
@@ -444,9 +453,7 @@ class SiteController extends Controller
 ;            }
 
             $model = new BaseModel();
-            file_put_contents('info-log.txt', 'before - '.print_r($model->getCachePlaces(), true)."\n", FILE_APPEND);
             $model->setCachePlaces($ids);
-            file_put_contents('info-log.txt', 'after - '.print_r($model->getCachePlaces(), true)."\n", FILE_APPEND);
             //$model->setCachePlacesDate($ids, $model->getDateCash());
 
             $responce = [
@@ -498,13 +505,11 @@ class SiteController extends Controller
         $timeBegin = time() - 10;
         $timeEnd = time();
         if(Timetable::find()->select(['updated_at'])->where(['between', 'updated_at', $timeBegin, $timeEnd])->exists()) {
-            file_put_contents('update-main.txt', date('d.m.Y H:i:s', $timeEnd).', user - '.Yii::$app->user->id.', '."\n", FILE_APPEND);
             $response['result'] = true;
             $response['update_table'] = true;
         }
         $userCook = new UserCook();
         if(!$userCook->isValue()) {
-            file_put_contents('logout.txt', date('d.m.Y H:i:s', $timeEnd).', user - '.Yii::$app->user->id.', '."\n", FILE_APPEND);
             $response['result'] = true;
             $response['logout'] = true;
         }

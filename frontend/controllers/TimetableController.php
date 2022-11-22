@@ -188,15 +188,13 @@ class TimetableController extends Controller
 
                     $model->setRepeats();
                 }
+                if($model->save()) {
+                    $responce['result'] = true;
+                    $responce['message'] = 'Запись успешно добавлена';
+                }
                 else {
-                    if($model->save()) {
-                        $responce['result'] = true;
-                        $responce['message'] = 'Запись успешно добавлена';
-                    }
-                    else {
-                        $responce['result'] = false;
-                        $responce['message'] = 'Не сохранено';
-                    }
+                    $responce['result'] = false;
+                    $responce['message'] = 'Не сохранено';
                 }
 
             }
@@ -291,7 +289,7 @@ class TimetableController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         if(Yii::$app->request->isAjax) {
             if($start_timetable_id && $start_time && $stop_time && $stop_date && $stop_place) {
-                $stop_date = strtotime($stop_date);
+                //$stop_date = strtotime($stop_date);
                 if($timetable = Timetable::findOne($start_timetable_id)) {
                     $timeDiff = $timetable->time_to - $timetable->time_from;
                     $timetable->time_from = $stop_time;

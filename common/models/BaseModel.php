@@ -187,24 +187,6 @@ class BaseModel extends ActiveRecord
                 ];
             }
         }
-        /*if($tempPlaces = $config[$this->getCacheName('temp_places')]) {
-            foreach($tempPlaces as $date => $value) {
-                if($value) {
-                    foreach($value as $val) {
-                        $m = Place::findOne($val);
-                        $result[] =[
-                            'id' => $m->id,
-                            'name' => $m->name,
-                            'background_color' => $m->getBackgroundColor(),
-                            'styles' => $m->getColorStyles(),
-                            'date' => $date,
-                            'date_timestamp' => strtotime($date),
-                            'default' => false,
-                        ];
-                    }
-                }
-            }
-        }*/
 
         $html = '';
         $countItem = 0;
@@ -215,6 +197,8 @@ class BaseModel extends ActiveRecord
                     'result' => $value,
                     'countItem' => $countItem,
                     'countResult' => count($result),
+                    'date_timestamp' => $value['date_timestamp'],
+                    'place_id' => $value['id'],
                 ]);
                 $countItem++;
             }

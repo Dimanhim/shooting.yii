@@ -4,16 +4,7 @@ use common\models\Timetable;
 
 $this->title = 'Расписание';
 $dateCache = $model->getDateCash();
-$array_cache = [
-        [
-            'place_id' => 1,
-            'date' => '28.07.2022',
-        ],
-        [
-            'place_id' => 2,
-            'date' => '30.07.2022',
-        ],
-];
+
 ?>
 <header>
     <div class="header">
@@ -26,7 +17,7 @@ $array_cache = [
             <!-- LEFT COLUMN -->
             <div id="navbarSupportedContent" class="col-sm-2 collapse show column-sidebar-o">
                 <?= $this->render('_sidebar', [
-                        'model' => $model,
+                    'model' => $model,
                 ]) ?>
             </div>
 
@@ -40,10 +31,7 @@ $array_cache = [
     <!--
     to center middle add class modal-dialog-centered to modal-dialog
     -->
-    <div id="view-modal">
-        <?//= $this->render('_modal_view') ?>
-        <?//= $this->render('_modal_result') ?>
-    </div>
+    <div id="view-modal"></div>
     <div id="create-modal"></div>
     <div id="view-modal"></div>
     <div id="edit-modal"></div>

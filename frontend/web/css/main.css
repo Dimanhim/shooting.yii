@@ -310,6 +310,11 @@ div.required:after {
   background: #f6f6f6;
   color: inherit;
 }
+.flash {
+  -webkit-box-shadow: 1px 1px 3px #f00, -1px -1px 3px #f00;
+  -moz-box-shadow: 1px 1px 3px #f00, -1px -1px 3px #f00 ;
+  box-shadow: 1px 1px 3px #f00, -1px -1px 3px #f00;
+}
 .repeat-group {
   display: none;
 }
@@ -346,6 +351,10 @@ BEGIN PRELOADER
   bottom: 0;
   opacity: 0.5;
   display: none;
+}
+.column-time {
+  position: relative;
+  z-index: 2000;
 }
 .ui-datepicker {
   z-index: 2000 !important;

@@ -258,6 +258,16 @@ class Timetable extends BaseModel
         return $this->getStyles($color->background, $color->border, $color->text) . $heightStr;
     }
 
+    public function getItemHeight()
+    {
+        return ($this->time_to - $this->time_from) / self::DIFF_COUNT_SECONDS * self::BASE_ROW_hEIGHT;
+    }
+
+    public function getItemRows()
+    {
+        return ($this->time_to - $this->time_from) / self::DIFF_COUNT_SECONDS;
+    }
+
     public function getPlace()
     {
         return $this->hasOne(Place::className(), ['id' => 'place_id']);
@@ -273,6 +283,7 @@ class Timetable extends BaseModel
 
     public static function getRowHeight($height)
     {
+        return $height;
         $paddingTop = 1;
         $paddingBottom = 1;
         return $height - $paddingTop - $paddingBottom;

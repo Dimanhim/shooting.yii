@@ -2,6 +2,7 @@
 
 namespace common\components;
 
+use common\models\Timetable;
 use phpDocumentor\Reflection\PseudoTypes\NonEmptyLowercaseString;
 use yii\base\Model;
 
@@ -86,8 +87,13 @@ class Helper extends Model
         return [
             '6', '06:30', '7', '07:30', '8', '08:30', '9', '09:30', '10', '10:30', '11', '11:30', '12', '12:30', '13',
             '13:30', '14', '14:30', '15', '15:30', '16', '16:30', '17', '17:30',
-            '18', '18:30', '18', '19:30', '20', '20:30', '21', '21:30', '22', '22:30', '23', '23:30', '24'
+            '18', '18:30', '19', '19:30', '20', '20:30', '21', '21:30', '22', '22:30', '23', '23:30', '24'
         ];
+    }
+
+    public static function getCountRows()
+    {
+        return count(self::getTimesArrayTest());
     }
 
     public static function getTimesShortArray()
@@ -128,12 +134,16 @@ class Helper extends Model
      * @param $array
      * @return string
      */
-    public static function getTimesOptions($array)
+    public static function getTimesOptions($array, $time = null)
     {
         $str = '';
         if(!empty($array)) {
             foreach($array as $key => $value) {
-                $str .= "<option value='".$key."'>".$value."</option>";
+                $selected = '';
+                if($time && ($key == $time + Timetable::DIFF_COUNT_SECONDS * 2)) {
+                    $selected .= ' selected="selected"';
+                }
+                $str .= "<option value='{$key}' {$selected}>{$value}</option>";
             }
         }
         return $str;

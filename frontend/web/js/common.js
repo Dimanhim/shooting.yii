@@ -373,6 +373,7 @@ $(document).ready(function() {
     updateTimeoutMain();
 
     initPlugins();
+    alignRecords();
 });
 // https://dwweb.ru/rastyanut_myishkoy.html - растягивание блока мышью на js
 // https://api.jqueryui.com/resizable/ вроде как с использованием jquery-ui
