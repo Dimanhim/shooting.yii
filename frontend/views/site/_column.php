@@ -123,7 +123,7 @@ exit;*/
         <!-- ЗДЕСЬ ВЕСЬ ВЫВОД ЗАПИСЕЙ НА ОПРЕДЕЛЕННУЮ ДАТУ ОПРЕДЕЛЕННОГО СТРЕЛЬБИЩА  -->
         <div class="calendar-column-body">
             <?php foreach(Helper::getTimesArray() as $time) : ?>
-            <div class="column-time column-time-o column-line <?= preg_match('/30/', $time) ? 'time-half' : '' ?> <?php if(!User::isInstructor()) : ?>column-line-o column-drag-drop-o<?php endif; ?>" data-time="<?= Helper::formatTimeFromHours($time) ?>" data-date="<?= strtotime($result['date']) ?>" data-place="<?= $result['id'] ?>">
+            <div class="column-time column-time-o column-line <?= preg_match('/30/', $time) ? 'time-half' : '' ?> <?php if(!User::isInstructor()) : ?>column-line-o column-drop-o<?php endif; ?>" data-time="<?= Helper::formatTimeFromHours($time) ?>" data-date="<?= strtotime($result['date']) ?>" data-place="<?= $result['id'] ?>">
                 <div class="column-calendar-block column-calendar-block-time-o">
                     <div class="column-calendar-time ">
                         <span><?= $time ?></span>

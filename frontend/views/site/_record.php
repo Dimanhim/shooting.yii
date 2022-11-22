@@ -2,7 +2,7 @@
 
 use common\models\User;
 
-$columnClass = !User::isInstructor() ? 'column-item-o column-drag-drop-o' : '';
+$columnClass = !User::isInstructor() ? 'column-item-o column-drag-o column-drop-o' : '';
 
 $recordContentInstructor = '';
 $recordContentInstructor .= ($column['qty'] ? $column['qty'].' чел. ' : '' ).'<br>';
@@ -40,7 +40,7 @@ $recordContentFull .= $column['serviceName'] ? $column['serviceName'] : '' ;
     </div>
 </div>
 <?php else : ?>
-    <div class="column-content column-line <?= $column['fill'] ?> column-line-o column-drag-drop-o" data-time="<?= $column['time'] ?>" data-date="<?= $column['date'] ?>" data-place="<?= $column['place_id'] ?>">
+    <div class="column-content column-line <?= $column['fill'] ?> column-line-o column-drop-o column-drag-o" data-time="<?= $column['time'] ?>" data-date="<?= $column['date'] ?>" data-place="<?= $column['place_id'] ?>">
         <div class="row">
             <div class="column-calendar-block">
                 <div class="column-calendar-time ">

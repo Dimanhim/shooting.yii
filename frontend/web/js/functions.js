@@ -476,7 +476,7 @@ function initDragNDrop() {
      * перетаскивание записей
      * */
     //$('.column-item-o:not(.column-line-o)').draggable({
-    $('.column-drag-drop-o').draggable({
+    $('.column-drag-o').draggable({
         start: function (event, ui) {
             dragObj = $(event.target);
             dragObj.css('z-index', 999);
@@ -485,7 +485,7 @@ function initDragNDrop() {
         }
     });
     //$('.column-line-o').droppable({
-    $('.column-drag-drop-o').droppable({
+    $('.column-drop-o').droppable({
         drop: function (event, ui) {
             dropObj = $(event.target);
             stop_time = dropObj.attr('data-time');
@@ -499,6 +499,17 @@ function initDragNDrop() {
                     updateTable();
                 }
             });
+        },
+        activate: function(event, ui) {
+            /*dropObj = $(event.target);
+            let time = dropObj.attr('data-time');
+            let timeObj = dropObj.parents('.calendar-column-body').find('.column-time-o[data-time="' + time + '"]')
+            timeObj.css({
+                borderTop: "medium double #dc3545",
+            });*/
+        },
+        deactivate: function(event, ui) {
+            //dropObj = $(event.target);
         },
         over: function(event, ui) {
             dropObj = $(event.target);
@@ -514,7 +525,8 @@ function initDragNDrop() {
             let time = dropObj.attr('data-time');
             let timeObj = dropObj.parents('.calendar-column-body').find('.column-time-o[data-time="' + time + '"]')
             timeObj.css("border", "").css("background-color", "");
-        }
+        },
+        tolerance: 'pointer',
     });
 }
 function initResizable() {
