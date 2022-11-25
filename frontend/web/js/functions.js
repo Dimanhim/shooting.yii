@@ -440,7 +440,7 @@ function removePreloader() {
  * делает запрос раз в 5 секунд и если есть новые записи, обновляет таблицу
  * */
 function updateTimeoutMain() {
-    return true;
+    //return true;
     setTimeout(function() {
         $.get('site/update-main', function(json) {
             if(json.result) {
@@ -491,7 +491,8 @@ function initDragNDrop() {
             stop_time = dropObj.attr('data-time');
             stop_date = dropObj.attr('data-date');
             stop_place = dropObj.attr('data-place');
-            console.log('drop')
+            console.log('drop');
+            $('#drop-box').remove();
             $.get('/timetable/drop-record', {start_timetable_id: start_timetable_id, start_time: start_time, stop_time: stop_time, stop_date: stop_date, stop_place: stop_place}, function(json) {
                 console.log(json)
                 if(json.result) {
@@ -513,21 +514,41 @@ function initDragNDrop() {
         },
         over: function(event, ui) {
             dropObj = $(event.target);
-            let time = dropObj.attr('data-time');
-            let timeObj = dropObj.parents('.calendar-column-body').find('.column-time-o[data-time="' + time + '"]')
-            timeObj.css({
-                border: "medium double #dc3545",
-                backgroundColor: "#dc3545"
-            });
+            paintOverDropBlock(dropObj)
         },
         out: function(event, ui) {
             dropObj = $(event.target);
-            let time = dropObj.attr('data-time');
-            let timeObj = dropObj.parents('.calendar-column-body').find('.column-time-o[data-time="' + time + '"]')
-            timeObj.css("border", "").css("background-color", "");
+            console.log('out', dropObj)
+            paintOutDropBlock(dropObj)
         },
         tolerance: 'pointer',
     });
+    function paintOverDropBlock(jObj) {
+        let time = jObj.attr('data-time');
+
+        // получаем ячейку со временем
+        let body = jObj.parents('.calendar-column-body');
+        let timeObj = body.find('.column-time-o[data-time="' + time + '"]');
+        let offset = timeObj.offset();
+
+        let styles = 'position:absolute; background: rgba(255,0,0,0.2); top: ' + offset.top + 'px; left: ' + offset.left + 'px; height: 40px; width: ' + body.width() + 'px;z-index: 2500;';
+
+        let div = `<div id="drop-box" style="${styles}"></div>`;
+
+        $('body').append(div);
+
+        /*timeObj.css({
+            border: "medium double #dc3545",
+            backgroundColor: "#dc3545"
+        });*/
+    }
+    function paintOutDropBlock() {
+        console.log('paintOutDropBlock')
+        $('#drop-box').remove();
+        /*let time = jObj.attr('data-time');
+        let timeObj = jObj.parents('.calendar-column-body').find('.column-time-o[data-time="' + time + '"]');
+        timeObj.css("border", "").css("background-color", "");*/
+    }
 }
 function initResizable() {
     let id,

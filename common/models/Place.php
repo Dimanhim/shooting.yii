@@ -118,7 +118,7 @@ class Place extends BaseModel
             }
         }
 
-        //return $this->sortByHeight($result) ;
+        return $this->sortByHeight($result) ;
         return $result;
     }
 

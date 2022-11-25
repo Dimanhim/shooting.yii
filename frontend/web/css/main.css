@@ -372,6 +372,9 @@ BEGIN PRELOADER
 /*
 END PRELOADER
 */
+.modal {
+  z-index: 2600;
+}
 @media (min-width:768px) {
   .modal-dialog {
     max-width: 700px;
